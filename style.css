@@ -30,15 +30,15 @@
   --card-padding: 1rem;
 
   /* SIZING & LAYOUT */
-  --max-width: 1200px;
+  --max-width: 100%;
   --gutter: 1.5rem;
-  --section-gap: 3.5rem;
+  --section-gap: 4.5rem;
   --transition: 220ms;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   /* CARD GRID MIN/MAX (EASY TO ADJUST) */
-  --card-min: 160px;
-  --card-max: 320px;
+  --card-min: 80px;
+  --card-max: 120px;
 
   /* ACCESSIBILITY */
   --focus-ring: 3px;
@@ -156,73 +156,6 @@ body::before{
 }
 
 /* ============================================================
-   MENU SECTION (HOME)
-   - SWITCHES BETWEEN GRID & STACK BASED ON SCREEN WIDTH
-   ============================================================ */
-.section-menu{
-  text-align:center;
-  margin-bottom: var(--section-gap);
-}
-
-/* MENU TITLE */
-.menu-title{
-  font-size: clamp(1.25rem, 2vw, 2rem);
-  color: var(--text-primary);
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-}
-
-/* MENU BUTTONS LAYOUT
-   - USE FLEX ON SMALLER VIEWPORTS FOR STACKING
-   - USE GRID ON LARGER VIEWPORTS FOR EVEN LAYOUT
-*/
-.menu-buttons{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:0.9rem;
-}
-
-/* BUTTON (CARD-LIKE) */
-.menu-btn{
-  background: linear-gradient(90deg, rgb(8, 8, 84), rgb(0, 0, 0));
-  color: var(--white);
-  border:1px solid var(--card-border);
-  border-radius:10px;
-  padding:0.85rem 1.2rem;
-  font-weight:600;
-  min-height:64px;
-  min-width: min(420px, 48%);
-  max-width: 100%;
-  cursor:pointer;
-  transition: transform var(--transition), background var(--transition), color var(--transition);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-.menu-btn:hover{
-  background: linear-gradient(90deg, var(--white), #619de2);
-  color:#000;
-  transform: translateY(-4px);
-  border:none;
-}
-
-/* RESPONSIVE ADJUSTMENTS FOR MENU BUTTONS */
-@media (max-width:767px){
-  .menu-buttons{ gap:0.8rem; }
-  .menu-btn{ width:100%; min-width:unset; }
-}
-@media (min-width:768px) and (max-width:1199px){
-  /* AT TABLET/LARGE TABLET USE FLEX WRAP WITH MORE WIDTH */
-  .menu-btn{ min-width:260px; max-width:340px; }
-}
-@media (min-width:1200px){
-  .menu-buttons{ display:grid; grid-template-columns: repeat(3, minmax(220px, 1fr)); gap:1rem; }
-  .menu-btn{ min-height:84px; }
-}
-
-/* ============================================================
    SECTION CONTAINER & TITLES
    ============================================================ */
 .section-container{
@@ -237,22 +170,6 @@ body::before{
   text-align:left;
 }
 
-/* BACK BUTTON */
-.back-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:0.6rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(90deg, rgba(8,8,84,0.95), rgba(0,0,0,0.8));
-  border:1px solid var(--card-border);
-  color:var(--white);
-  padding:0.45rem 0.85rem;
-  border-radius:8px;
-  font-weight:600;
-  cursor:pointer;
-  transition: transform var(--transition), background var(--transition);
-}
-.back-btn:hover{ transform: translateY(-3px); background: linear-gradient(90deg,var(--white),#619de2); color:#000; }
 
 /* ============================================================
    CARD GRID / JOB GRID
@@ -269,42 +186,38 @@ body::before{
 
 /* RESPONSIVE GRID RULES */
 @media (min-width:1200px){
-  .card-grid{ grid-template-columns: repeat(4, 1fr); gap:1.25rem; }
+  .card-grid{ grid-template-columns: repeat(5, 1fr); gap:1.25rem; }
+  .card job-card-grid{ grid-template-columns: repeat(7, 1fr); gap:0.75rem; }
 }
 @media (min-width:1024px) and (max-width:1199px){
-  .card-grid{ grid-template-columns: repeat(3, 1fr); }
+  .card-grid{ grid-template-columns: repeat(4, 1fr); }
+  .card job-card-grid{ grid-template-columns: repeat(6, 1fr); }
 }
 @media (min-width:768px) and (max-width:1023px){
-  .card-grid{ grid-template-columns: repeat(2, 1fr); }
+  .card-grid{ grid-template-columns: repeat(4, 1fr); }
+  .card job-card-grid{ grid-template-columns: repeat(5, 1fr); }
 }
 @media (max-width:767px){
   /* USE FLEX STACK FOR SMALL PHONES TO IMPROVE SCROLLING PERFORMANCE */
-  .card-grid{ display:flex; flex-direction:column; gap:0.9rem; align-items:stretch; }
+  .card-grid{ grid-template-columns: repeat(3, 1fr); }
+  .card job-card-grid{ grid-template-columns: repeat(3, 1fr); }
 }
 
-/* JOB GRID (SAME RULES AS CARD GRID BUT WITH SMALLER MIN) */
-.job-grid{
-  display:grid;
-  gap:0.9rem;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-}
-@media (max-width:767px){ .job-grid{ display:flex; flex-direction:column; } }
 
 /* ============================================================
    CARD STYLES
    - LIGHTWEIGHT, BACKDROP-FILTER REDUCED ON SMALL DEVICES
    ============================================================ */
-.card,
-.job-card{
-  width:100%;
-  max-width: var(--card-max);
-  background: var(--card-bg);
+.card{
+  min-width: 130px;
+  max-width: 170px;
+  max-height: 50px;
+  background: #34362c81;
   border: 1px solid var(--card-border);
   border-radius: var(--card-radius);
   padding: var(--card-padding);
   display:flex;
   flex-direction:column;
-  gap:0.5rem;
   transition: transform var(--transition), box-shadow var(--transition);
   cursor:pointer;
   overflow:hidden;
@@ -312,7 +225,23 @@ body::before{
   position:relative;
   min-height: 120px;
 }
-
+.job-card{
+  min-width: 130px;
+  max-width: 130px;
+  max-height: 50px;
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  display:flex;
+  flex-direction:column;
+  transition: transform var(--transition), box-shadow var(--transition);
+  cursor:pointer;
+  overflow:hidden;
+  align-items:stretch;
+  position:relative;
+  min-height: 120px;
+}
 /* HOVER EFFECT (DISABLED ON TOUCH DEVICES) */
 @media (hover:hover) and (pointer: fine){
   .card:hover, .job-card:hover{
@@ -426,14 +355,14 @@ body::before{
 .filter-btn{
   background: rgba(255,255,255,0.04);
   border:1px solid var(--card-border);
-  color: var(--white);
+  color: #000000;
   padding:8px 12px;
   border-radius:20px;
   font-weight:600;
   cursor:pointer;
   transition: background var(--transition), transform var(--transition);
 }
-.filter-btn.active, .filter-btn:hover{ background: linear-gradient(90deg, rgba(8,8,84,0.95), rgba(0,0,0,0.8)); transform: translateY(-2px); }
+.filter-btn.active, .filter-btn:hover{ background: linear-gradient(90deg, rgba(11, 15, 239, 0.95), rgba(72, 9, 220, 0.845));color:#ffffff; transform: translateY(-2px); }
 
 /* ============================================================
    FOOTER
