@@ -1,35 +1,77 @@
 // ============================================================
 // OPENROOT HH SCRIPT — PRODUCTION VERSION (ES2023+)
-// VERSION: 1.3.1 — FIXED SEGMENT-ID PERSISTENCE (STABLE STORAGE)
+// VERSION: 1.3.2 — STRONG UID RESOLUTION & PER-USER STORAGE FIX
 // ============================================================
 
 /* ============================================================
-   STEP 1 — IDENTIFY USER (VIA ?uid=XYZ OR LOCAL CACHE)
+   STEP 1 — IDENTIFY USER (VIA ?uid=XYZ OR SITE STORAGE)
+   - Priority: URL 'uid' param -> main-site key 'openrootUserUID' ->
+     cached 'openroot_current_uid' -> 'guest_user'
+   - If UID changes (across tabs), we reload to ensure correct data
    ============================================================ */
 
 let USER_UID = null;
 
-// GET UID FROM URL PARAMETER (IF PROVIDED BY MAIN SITE)
+// Helper: read uid from URL (decoded automatically by URLSearchParams)
 const urlParams = new URLSearchParams(window.location.search);
-USER_UID = urlParams.get("uid");
+const uidFromUrl = urlParams.get("uid") || urlParams.get("user") || null;
 
-// IF UID FOUND IN URL, STORE LOCALLY FOR FUTURE VISITS
-if (USER_UID) {
-  localStorage.setItem("openroot_current_uid", USER_UID);
+// Helper: read uid from main-site storage keys
+const uidFromMainSite =
+  (typeof window !== "undefined" && (localStorage.getItem("openrootUserUID") || sessionStorage.getItem("openrootUserUID"))) ||
+  null;
+
+// Helper: previously cached uid used by this subsite
+const cachedUid = (typeof window !== "undefined" && localStorage.getItem("openroot_current_uid")) || null;
+
+// Resolve UID: prefer URL → main-site → cached → guest_user
+if (uidFromUrl) {
+  USER_UID = decodeURIComponent(uidFromUrl);
+} else if (uidFromMainSite) {
+  USER_UID = uidFromMainSite;
+} else if (cachedUid) {
+  USER_UID = cachedUid;
 } else {
-  // OTHERWISE LOAD FROM PREVIOUSLY SAVED UID
-  USER_UID = localStorage.getItem("openroot_current_uid");
+  USER_UID = "guest_user";
 }
 
-// IF NO UID, ASSIGN A TEMPORARY GUEST ID
-if (!USER_UID) USER_UID = "guest_user";
+// If UID came from URL or main site, persist as the subsite's current uid
+try {
+  if (USER_UID && USER_UID !== cachedUid) {
+    localStorage.setItem("openroot_current_uid", USER_UID);
+  }
+} catch (e) {
+  console.warn("UID persist failed:", e);
+}
+
+// Listen for changes in the main-site UID (storage event) and reload if it changes
+window.addEventListener("storage", (ev) => {
+  try {
+    if (ev.key === "openrootUserUID" || ev.key === "openroot_current_uid") {
+      const newUid = ev.newValue;
+      if (!newUid) return;
+      if (newUid !== USER_UID) {
+        console.log("🔁 Detected UID change via storage. Reloading subsite for UID:", newUid);
+        // Update local and force reload to load the correct per-user state
+        localStorage.setItem("openroot_current_uid", newUid);
+        // Small delay to allow storage propagation
+        setTimeout(() => window.location.reload(), 80);
+      }
+    }
+  } catch (err) {
+    console.warn("Storage event handler error:", err);
+  }
+});
 
 /* ============================================================
    STEP 2 — DEFINE STORAGE KEY (UNIQUE PER USER)
    ============================================================ */
 
-const MAX_STARS = 5; // LIMIT STARS PER SECTION
-const STORAGE_KEY = `starredCards_${USER_UID}`; // EACH USER GETS UNIQUE STORAGE
+// Use a function so we always compute with the active USER_UID
+const getStorageKey = () => `starredCards_${USER_UID}`;
+
+// Useful debug message
+console.log("✅ OPENROOT APP INITIALIZED FOR UID:", USER_UID);
 
 /* ============================================================
    STEP 3 — STORAGE HANDLER (SAFE LOCAL STORAGE ACCESS)
@@ -38,7 +80,8 @@ const STORAGE_KEY = `starredCards_${USER_UID}`; // EACH USER GETS UNIQUE STORAGE
 const Storage = {
   async get(fallback = {}) {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const key = getStorageKey();
+      const raw = localStorage.getItem(key);
       return raw ? JSON.parse(raw) : fallback;
     } catch (err) {
       console.warn("STORAGE.GET ERROR:", err);
@@ -47,7 +90,8 @@ const Storage = {
   },
   async set(value) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+      const key = getStorageKey();
+      localStorage.setItem(key, JSON.stringify(value));
     } catch (err) {
       console.warn("STORAGE.SET ERROR:", err);
     }
@@ -55,7 +99,7 @@ const Storage = {
 };
 
 /* ============================================================
-   STEP 4 — MAIN APP CLASS
+   STEP 4 — MAIN APP CLASS (UNCHANGED LOGIC; STORAGE KEY UPDATED)
    ============================================================ */
 
 class OpenrootApp {
@@ -74,7 +118,7 @@ class OpenrootApp {
     if (this.initialized) return;
     this.initialized = true;
 
-    // LOAD USER-STORED STARRED DATA
+    // LOAD USER-STORED STARRED DATA (per-user key)
     const saved = await Storage.get({});
     if (saved && typeof saved === "object") {
       for (const [segId, ids] of Object.entries(saved)) {
@@ -363,7 +407,7 @@ class OpenrootApp {
     const app = new OpenrootApp(document);
     await app.init();
     window.__openrootApp = app;
-    console.log("✅ OPENROOT APP INITIALIZED FOR UID:", USER_UID);
+    // (Already logged above at UID resolution)
   } catch (err) {
     console.error("APP INIT ERROR", err);
   }
