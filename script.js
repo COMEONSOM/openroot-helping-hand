@@ -13,12 +13,6 @@ let USER_UID = null;
 const urlParams = new URLSearchParams(window.location.search);
 USER_UID = urlParams.get("uid");
 
-// AUTO-FALLBACK IF USER LOGGED OUT ON MAIN SITE
-if (!localStorage.getItem("openrootUserUID")) {
-  USER_UID = "guest_user";
-  localStorage.removeItem("openroot_current_uid");
-}
-
 // IF UID FOUND IN URL, STORE LOCALLY FOR FUTURE VISITS
 if (USER_UID) {
   localStorage.setItem("openroot_current_uid", USER_UID);
