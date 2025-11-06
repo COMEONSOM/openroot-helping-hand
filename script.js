@@ -1,132 +1,148 @@
 // ============================================================
-// OPENROOT HH SCRIPT — MODERN, PRODUCTION-READY (ES2023+)
-// VERSION: 1.1.5
+// OPENROOT HH SCRIPT — PRODUCTION VERSION (ES2023+)
+// VERSION: 1.3.0 — UID-BASED LOCAL STORAGE (NO SERVER DEPENDENCY)
 // ============================================================
 
-/* GLOBALS: LIMIT STARRED CARDS AND STORAGE KEY */
-const MAX_STARS = 5;
-const STORAGE_KEY = "starredCardsV1";
+/* ============================================================
+   STEP 1 — IDENTIFY USER (VIA ?uid=XYZ OR LOCAL CACHE)
+   ============================================================ */
 
-/* STORAGE HELPER (ASYNC-FRIENDLY, SAFE) */
-/* ALL CAPS COMMENTS BELOW EXPLAIN LOGIC */
+let USER_UID = null;
+
+// GET UID FROM URL PARAMETER (IF PROVIDED BY MAIN SITE)
+const urlParams = new URLSearchParams(window.location.search);
+USER_UID = urlParams.get("uid");
+
+// AUTO-FALLBACK IF USER LOGGED OUT ON MAIN SITE
+if (!localStorage.getItem("openrootUserUID")) {
+  USER_UID = "guest_user";
+  localStorage.removeItem("openroot_current_uid");
+}
+
+// IF UID FOUND IN URL, STORE LOCALLY FOR FUTURE VISITS
+if (USER_UID) {
+  localStorage.setItem("openroot_current_uid", USER_UID);
+} else {
+  // OTHERWISE LOAD FROM PREVIOUSLY SAVED UID
+  USER_UID = localStorage.getItem("openroot_current_uid");
+}
+
+// IF NO UID, ASSIGN A TEMPORARY GUEST ID
+if (!USER_UID) USER_UID = "guest_user";
+
+/* ============================================================
+   STEP 2 — DEFINE STORAGE KEY (UNIQUE PER USER)
+   ============================================================ */
+
+const MAX_STARS = 5; // LIMIT STARS PER SECTION
+const STORAGE_KEY = `starredCards_${USER_UID}`; // EACH USER GETS UNIQUE STORAGE
+
+/* ============================================================
+   STEP 3 — STORAGE HANDLER (SAFE LOCAL STORAGE ACCESS)
+   ============================================================ */
+
 const Storage = {
-  // GET ITEM ASYNC-LIKE (WRAPS LOCALSTORAGE ACCESS)
-  async get(key, fallback = null) {
+  async get(fallback = {}) {
     try {
-      const raw = localStorage.getItem(key);
+      const raw = localStorage.getItem(STORAGE_KEY);
       return raw ? JSON.parse(raw) : fallback;
     } catch (err) {
-      // ON PARSE OR ACCESS ERROR, RETURN FALLBACK
-      console.error("STORAGE.GET ERROR", err);
+      console.warn("STORAGE.GET ERROR:", err);
       return fallback;
     }
   },
-
-  // SET ITEM (STRINGIFY SAFELY)
-  async set(key, value) {
+  async set(value) {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
     } catch (err) {
-      // IGNORE QUOTA OR OTHER ERRORS, LOG FOR DEBUG
-      console.warn("STORAGE.SET ERROR", err);
+      console.warn("STORAGE.SET ERROR:", err);
     }
   },
 };
 
-/* MAIN APPLICATION CLASS */
-/* RESPONSIBILITIES:
-   - INITIALIZE DOM
-   - MANAGE STARRED SET (O(1) OPERATIONS)
-   - HANDLE REORDERING (O(n) PER SEGMENT)
-   - MANAGE FILTERS + NAVIGATION */
+/* ============================================================
+   STEP 4 — MAIN APP CLASS
+   ============================================================ */
+
 class OpenrootApp {
   constructor(root = document) {
-    // CACHE ROOTS AND STATE
     this.root = root;
     this.container = root.querySelector("main.container") ?? document.body;
-    this.starredSet = new Set();
+    this.starredMap = new Map();
     this.cardSegmentMap = new Map();
-    this.initialized = false;
 
-    // BIND HANDLERS FOR LATER REMOVAL IF NEEDED
+    this.initialized = false;
     this.onContainerClick = this.onContainerClick.bind(this);
     this.onContainerKeydown = this.onContainerKeydown.bind(this);
   }
 
-  /* INITIALIZE APP (ASYNC TO ALLOW FUTURE AWAIT) */
   async init() {
     if (this.initialized) return;
     this.initialized = true;
 
-    // LOAD STARRED FROM STORAGE (O(k) WHERE k = SAVED STARS)
-    const saved = await Storage.get(STORAGE_KEY, []);
-    if (Array.isArray(saved)) {
-      for (const id of saved) this.starredSet.add(id);
+    // LOAD USER-STORED STARRED DATA
+    const saved = await Storage.get({});
+    if (saved && typeof saved === "object") {
+      for (const [segId, ids] of Object.entries(saved)) {
+        this.starredMap.set(segId, new Set(ids));
+      }
     }
 
-    // SETUP CARDS AND SEGMENTS
     this.setupCards();
-
-    // INITIAL UI STATE: APPLY STARRED UI, REORDER
     this.applyInitialStarState();
 
-    // ADD EVENT LISTENERS (DELEGATED)
     this.container.addEventListener("click", this.onContainerClick, { passive: true });
     this.container.addEventListener("keydown", this.onContainerKeydown, { passive: true });
 
-    // INIT FILTER BUTTONS AND MENU
     this.initJobFilters();
     this.initMenu();
 
-    // FORCE INITIAL REORDER AFTER FIRST PAINT (BATCH DOM CHANGES)
     requestAnimationFrame(() => {
       const segments = Array.from(new Set(this.cardSegmentMap.values()));
       segments.forEach((seg) => this.reorderSegment(seg));
     });
   }
 
-  /* ASSIGN UNIQUE IDS, MAP CARDS -> THEIR SEGMENTS & STORE ORIGINAL INDEX */
   setupCards() {
-    // SELECT ALL CARDS (REGULAR + JOB)
     const cards = Array.from(this.root.querySelectorAll(".card, .job-card"));
     let autoId = 0;
-
-    // MAP SEGMENTS (CARD GRID ELEMENTS)
     const segments = Array.from(this.root.querySelectorAll(".card-grid, .job-grid"));
 
-    // ASSIGN IDS AND ORIG INDEXES (O(n))
     for (const seg of segments) {
+      if (!seg.dataset.segId) seg.dataset.segId = `seg-${Math.random().toString(36).slice(2, 8)}`;
+
       const segCards = Array.from(seg.querySelectorAll(".card, .job-card"));
       segCards.forEach((card, idx) => {
         if (!card.dataset.id) card.dataset.id = `card-${++autoId}`;
-        // STORE ORIGINAL INDEX FOR STABLE SORT
         card.dataset.origIndex = idx.toString();
-        // MAP CARD ID -> SEGMENT ELEMENT
         this.cardSegmentMap.set(card.dataset.id, seg);
       });
+
+      if (!this.starredMap.has(seg.dataset.segId)) {
+        this.starredMap.set(seg.dataset.segId, new Set());
+      }
     }
   }
 
-  /* APPLY STAR UI ACCORDING TO STARRED SET */
   applyInitialStarState() {
     const allCards = Array.from(this.root.querySelectorAll(".card, .job-card"));
     for (const card of allCards) {
       const id = card.dataset.id;
+      const seg = this.cardSegmentMap.get(id);
+      const segId = seg?.dataset.segId;
       const btn = card.querySelector(".star-btn");
-      if (!btn || !id) continue;
-      const isStarred = this.starredSet.has(id);
+      if (!btn || !id || !segId) continue;
+      const isStarred = this.starredMap.get(segId)?.has(id);
       this.updateStarAttr(btn, isStarred);
     }
   }
 
-  /* UPDATE STAR BUTTON ATTRIBUTES (A11Y) */
   updateStarAttr(btn, isStarred) {
     btn.classList.toggle("starred", Boolean(isStarred));
     btn.setAttribute("aria-pressed", isStarred ? "true" : "false");
     btn.setAttribute("aria-label", isStarred ? "Unstar card" : "Star card");
   }
 
-  /* EVENT DELEGATION: CLICK HANDLER (STAR BUTTONS + CARD OPEN) */
   onContainerClick(ev) {
     const starBtn = ev.target.closest(".star-btn");
     if (starBtn) {
@@ -135,7 +151,6 @@ class OpenrootApp {
       return;
     }
 
-    // OPEN CARD URL IF CLICKED OUTSIDE STAR
     const card = ev.target.closest(".card, .job-card");
     if (card) {
       const url = (card.dataset.url || "").trim();
@@ -143,26 +158,22 @@ class OpenrootApp {
         try {
           window.open(url, "_blank", "noopener");
         } catch (err) {
-          // SILENT FAIL FOR POPUP BLOCKERS
           console.warn("OPEN URL ERROR", err);
         }
       }
     }
   }
 
-  /* KEYBOARD ACCESSIBILITY: ENTER/SPACE SUPPORT */
   onContainerKeydown(ev) {
     const key = ev.key;
     if (key !== "Enter" && key !== " ") return;
     const el = ev.target;
     if (el.classList.contains("star-btn")) {
-      // SIMULATE CLICK FOR KEYBOARD USERS
       el.click();
       ev.preventDefault();
       return;
     }
 
-    // IF FOCUSED ELEMENT IS INSIDE A CARD, OPEN THE CARD (NOT THE STAR)
     const card = el.closest?.(".card, .job-card");
     if (card && !el.classList.contains("star-btn")) {
       const url = (card.dataset.url || "").trim();
@@ -177,67 +188,68 @@ class OpenrootApp {
     }
   }
 
-  /* TOGGLE STAR: ADD/REMOVE FROM SET, UPDATE STORAGE, REPOSITION CARD */
   async toggleStar(starBtn) {
-    // FIND CARD FOR THIS STAR BUTTON
     const card = starBtn.closest(".card, .job-card");
     if (!card) return;
     const id = card.dataset.id;
     if (!id) return;
 
-    // IF ADDING STAR BUT MAX REACHED -> PROMPT TO REMOVE
-    if (!this.starredSet.has(id) && this.starredSet.size >= MAX_STARS) {
+    const seg = this.cardSegmentMap.get(id);
+    if (!seg) return;
+    const segId = seg.dataset.segId;
+    const segSet = this.starredMap.get(segId) || new Set();
+
+    if (!segSet.has(id) && segSet.size >= MAX_STARS) {
       const confirmRemove = window.confirm(
-        `YOU CAN ONLY STAR UP TO ${MAX_STARS} CARDS. REMOVE ONE TO ADD A NEW ONE?`
+        `YOU CAN ONLY STAR UP TO ${MAX_STARS} CARDS IN THIS SECTION. REMOVE ONE TO ADD A NEW ONE!`
       );
       if (!confirmRemove) return;
-      // IF USER CONFIRMS, REMOVE THE OLDEST STAR (ARBITRARY CHOICE: FIRST IN SET)
-      const oldest = this.starredSet.values().next().value;
-      if (oldest) this.starredSet.delete(oldest);
+      const oldest = segSet.values().next().value;
+      if (oldest) segSet.delete(oldest);
     }
 
-    // TOGGLE IN SET
-    if (this.starredSet.has(id)) {
-      this.starredSet.delete(id);
+    if (segSet.has(id)) {
+      segSet.delete(id);
       this.updateStarAttr(starBtn, false);
     } else {
-      this.starredSet.add(id);
+      segSet.add(id);
       this.updateStarAttr(starBtn, true);
     }
 
-    // PERSIST STATE (ASYNC-LIKE)
-    await Storage.set(STORAGE_KEY, Array.from(this.starredSet));
+    this.starredMap.set(segId, segSet);
 
-    // REPOSITION CARD IN ITS SEGMENT (DEFERRED TO RAF)
+    const toSave = {};
+    for (const [k, set] of this.starredMap.entries()) {
+      toSave[k] = Array.from(set);
+    }
+    await Storage.set(toSave);
+
     this.repositionCard(card);
   }
 
-  /* REORDER A SEGMENT: STARRED FIRST, OTHERS PRESERVE ORIGINAL ORDER
-     TIME COMPLEXITY: O(n) FOR SCANNING CARDS IN SEGMENT */
   reorderSegment(segmentEl) {
     if (!segmentEl) return;
     const cards = Array.from(segmentEl.querySelectorAll(".card, .job-card"));
     if (cards.length <= 1) return;
 
-    // SEPARATE STARRED vs UNSTARRED
+    const segId = segmentEl.dataset.segId;
+    const segSet = this.starredMap.get(segId) || new Set();
+
     const starred = [];
     const unstarred = [];
 
     for (const c of cards) {
       const id = c.dataset.id;
-      if (id && this.starredSet.has(id)) starred.push(c);
+      if (id && segSet.has(id)) starred.push(c);
       else unstarred.push(c);
     }
 
-    // STABLE SORT: UNSTARRED ALREADY HAVE origIndex
     unstarred.sort((a, b) => (Number(a.dataset.origIndex) || 0) - (Number(b.dataset.origIndex) || 0));
 
-    // BATCH DOM WRITE VIA FRAGMENT (MINIMIZE LAYOUT THRASH)
     const frag = document.createDocumentFragment();
     for (const item of starred) frag.appendChild(item);
     for (const item of unstarred) frag.appendChild(item);
 
-    // RENDER UNDER requestAnimationFrame FOR SMOOTHNESS
     requestAnimationFrame(() => {
       try {
         segmentEl.appendChild(frag);
@@ -247,25 +259,23 @@ class OpenrootApp {
     });
   }
 
-  /* REPOSITION A SINGLE CARD BASED ON STARRED STATE
-     MINIMIZES MOVES: INSERT BEFORE FIRST UNSTARRED / AFTER LAST STARRED */
   repositionCard(card) {
     requestAnimationFrame(() => {
       try {
         const id = card.dataset.id;
         const segment = this.cardSegmentMap.get(id);
         if (!segment) return;
+        const segId = segment.dataset.segId;
+        const segSet = this.starredMap.get(segId) || new Set();
 
         const cards = Array.from(segment.querySelectorAll(".card, .job-card"));
-        const isStarred = this.starredSet.has(id);
+        const isStarred = segSet.has(id);
 
         if (isStarred) {
-          // PLACE BEFORE FIRST UNSTARRED
-          const firstUn = cards.find((c) => !this.starredSet.has(c.dataset.id));
+          const firstUn = cards.find((c) => !segSet.has(c.dataset.id));
           firstUn ? segment.insertBefore(card, firstUn) : segment.appendChild(card);
         } else {
-          // PLACE AFTER LAST STARRED, BUT PRESERVE ORIGINAL ORDER FOR UNSTARRED
-          const lastStarIdx = cards.reduce((acc, c, idx) => (this.starredSet.has(c.dataset.id) ? idx : acc), -1);
+          const lastStarIdx = cards.reduce((acc, c, idx) => (segSet.has(c.dataset.id) ? idx : acc), -1);
           const origIndex = Number(card.dataset.origIndex) || 0;
 
           let beforeNode = null;
@@ -285,7 +295,6 @@ class OpenrootApp {
     });
   }
 
-  /* INITIALIZE JOB FILTERS (DELEGATED) */
   initJobFilters() {
     const filterContainer = document.querySelector(".job-filters");
     if (!filterContainer) return;
@@ -300,11 +309,9 @@ class OpenrootApp {
         if (!btn) return;
         const filter = btn.dataset.filter ?? "all";
 
-        // VISUAL STATE (O(m) WHERE m = NUMBER OF FILTER BUTTONS)
         filterButtons.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
 
-        // SHOW/HIDE JOB CARDS (O(n) WHERE n = JOB CARDS)
         for (const card of jobCards) {
           const type = card.dataset.type || "";
           const hide = !(filter === "all" || type === filter);
@@ -315,7 +322,6 @@ class OpenrootApp {
     );
   }
 
-  /* SECTION MENU AND BACK BUTTONS */
   initMenu() {
     const buttons = Array.from(document.querySelectorAll(".menu-btn"));
     const sections = Array.from(document.querySelectorAll(".section-container"));
@@ -327,16 +333,13 @@ class OpenrootApp {
         const target = document.getElementById(targetId);
         if (!target) return;
 
-        // HIDE MENU, SHOW SECTION
         menuSection.classList.add("hidden");
         sections.forEach((sec) => sec.classList.add("hidden"));
         target.classList.remove("hidden");
-
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     }
 
-    // BACK BUTTONS
     document.querySelectorAll(".back-btn").forEach((btn) =>
       btn.addEventListener("click", () => {
         document.querySelectorAll(".section-container").forEach((sec) => sec.classList.add("hidden"));
@@ -346,20 +349,23 @@ class OpenrootApp {
     );
   }
 
-  /* CLEANUP: REMOVE EVENT LISTENERS (IF NEEDED) */
   destroy() {
     this.container.removeEventListener("click", this.onContainerClick);
     this.container.removeEventListener("keydown", this.onContainerKeydown);
     this.initialized = false;
   }
 }
-/* BOOTSTRAP THE APP (IMMEDIATELY INVOKED ASYNC) */
+
+/* ============================================================
+   STEP 5 — BOOTSTRAP APPLICATION
+   ============================================================ */
+
 (async function bootstrap() {
   try {
     const app = new OpenrootApp(document);
     await app.init();
-    // EXPOSE APP FOR DEBUGGING (DEV ONLY - REMOVE IN PRODUCTION IF DESIRED)
     window.__openrootApp = app;
+    console.log("✅ OPENROOT APP INITIALIZED FOR UID:", USER_UID);
   } catch (err) {
     console.error("APP INIT ERROR", err);
   }

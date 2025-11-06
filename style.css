@@ -1,15 +1,14 @@
 /* ============================================================
-   OPENROOT HELPING HAND — REFACTORED & OPTIMIZED
-   VERSION 1.1.5-OPT
-   PURPOSE: CLEANED, COMMENTED, RESPONSIVE STYLESHEET
-   NOTES: COMMENTS IN ALL CAPS, VARIABLES FOR EASY EDIT
+   OPENROOT HELPING HAND — REWRITTEN & STRUCTURED
+   VERSION: 1.1.6-REWRITE
+   NOTES: ALL Comments ARE IN ALL CAPS AND MAP TO HTML CLASSES
    ============================================================ */
 
 /* ============================
-   THEME VARIABLES (GLOBAL)
+   THEME VARIABLES (ROOT) - :root
    ============================ */
 :root{
-  /* PRIMARY COLOR PALETTE */
+  /* PRIMARY COLORS */
   --white: #ffffff;
   --text-primary: #0e0342;            /* PRIMARY TEXT COLOR (DARK) */
   --text-light: #cbd5e1;              /* MUTED TEXT */
@@ -18,7 +17,7 @@
   --highlight: #bd1300;               /* LIVE / HIGHLIGHT COLOR */
   --live-text: #b30000;
 
-  /* BACKGROUND (KEEP SIMILAR LOOK, LESS HEAVY FOR PERFORMANCE) */
+  /* BACKGROUND GRADIENTS */
   --bg-grad-1: linear-gradient(135deg, #200202 0%, #0b0040 40%, #010003 100%);
   --bg-radial: radial-gradient(circle at 30% 30%, #e7dd17 0%, #65f349 25%, #366fea 55%, #0c0c04 100%);
   --page-bg: var(--bg-radial), var(--bg-grad-1);
@@ -27,16 +26,16 @@
   --card-bg: rgba(32,32,36,0.14);
   --card-border: rgba(255,255,255,0.12);
   --card-radius: 12px;
-  --card-padding: 1rem;
+  --card-padding: 0.5rem;
 
   /* SIZING & LAYOUT */
   --max-width: 100%;
   --gutter: 1.5rem;
-  --section-gap: 4.5rem;
+  --section-gap: 3.5rem;
   --transition: 220ms;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  /* CARD GRID MIN/MAX (EASY TO ADJUST) */
+  /* CARD GRID MIN/MAX */
   --card-min: 80px;
   --card-max: 120px;
 
@@ -44,13 +43,14 @@
   --focus-ring: 3px;
 }
 
-/* ============================================================
-   RESET / BASE
-   ============================================================ */
+/* ============================
+   RESET / BASE - HTML, BODY, GLOBAL
+   ============================ */
+/* APPLIES TO html, body, AND ALL ELEMENTS */
 *,
 *::before,
 *::after { box-sizing: border-box; }
-html,body{ height:100%; margin:0; padding:0; }
+html, body { height:100%; margin:0; padding:0; }
 body{
   font-family: var(--font-sans);
   color: var(--white);
@@ -59,16 +59,15 @@ body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
-  /* USE CONTAIN FOR BETTER PAINT ISOLATION WHERE SUPPORTED */
-  contain: layout style size;
+  contain: layout style size; /* PERFORMANCE ISOLATION */
 }
 
-/* REDUCE MOTION WHEN USER PREFERS */
+/* REDUCE MOTION WHEN USER PREFERS - GLOBAL */
 @media (prefers-reduced-motion: reduce){
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
 }
 
-/* GRID OVERLAY (SUBTLE, LOW-IMPACT) */
+/* GRID OVERLAY (BODY::BEFORE) */
 body::before{
   content:"";
   position:fixed;
@@ -83,9 +82,10 @@ body::before{
   z-index:-1;
 }
 
-/* ============================================================
-   TECH ORBS (DECORATIVE) - HIDDEN ON LOW-END / SMALL DEVICES
-   ============================================================ */
+/* ============================
+   TECH ORBS (DECORATIVE) - .tech-orb
+   ============================ */
+/* AMBIENT ORBS ADDED IN HTML AS <div class="tech-orb"> */
 .tech-orb{
   position:fixed;
   width:150px;
@@ -97,16 +97,20 @@ body::before{
   z-index:-3;
   will-change: transform, opacity;
 }
-.tech-orb:nth-child(1){ top:12%; left:6%; background: radial-gradient(circle, rgba(102,0,255,0.22), transparent 70%); }
-.tech-orb:nth-child(2){ bottom:8%; right:18%; background: radial-gradient(circle, rgba(0,102,255,0.16), transparent 70%); }
-.tech-orb:nth-child(3){ top:48%; right:34%; background: radial-gradient(circle, rgba(180,0,255,0.12), transparent 70%); }
+.tech-orb:nth-of-type(1){ top:12%; left:6%; background: radial-gradient(circle, rgba(102,0,255,0.22), transparent 70%); }
+.tech-orb:nth-of-type(2){ bottom:8%; right:18%; background: radial-gradient(circle, rgba(0,102,255,0.16), transparent 70%); }
+.tech-orb:nth-of-type(3){ top:48%; right:34%; background: radial-gradient(circle, rgba(180,0,255,0.12), transparent 70%); }
 
-/* HIDE ORBS ON MOBILE & LOW-END DEVICES */
-@media (max-width:880px){ .tech-orb{ display:none; } body::before{ opacity:0.05; backdrop-filter:none; } }
+/* HIDE ORBS ON SMALL DEVICES - MEDIA QUERY */
+@media (max-width:880px){
+  .tech-orb{ display:none; }
+  body::before{ opacity:0.05; backdrop-filter:none; }
+}
 
-/* ============================================================
-   HEADER / LOGO
-   ============================================================ */
+/* ============================
+   SITE HEADER & LOGO - .site-header, .logo-wrapper, .site-logo, .logo-text
+   ============================ */
+/* HEADER ELEMENT FROM HTML: <header class="site-header"> */
 .site-header{
   position:sticky;
   top:0;
@@ -120,18 +124,22 @@ body::before{
   backdrop-filter: blur(6px);
 }
 
-/* LOGO WRAPPER (FLEXIBLE FOR DIFFERENT WIDTHS) */
+/* LOGO WRAPPER: <div class="logo-wrapper"> */
 .logo-wrapper{
   display:flex;
   align-items:center;
   gap:0.6rem;
   max-height:56px;
 }
+
+/* SITE LOGO IMAGE: <img class="site-logo"> */
 .site-logo{
-  width: 120px;             /* RESPONSIVE CHANGES BELOW */
+  width: 120px;
   height: auto;
   display:block;
 }
+
+/* LOGO TEXT: <span class="logo-text"> */
 .logo-text{
   color:var(--white);
   font-weight:700;
@@ -141,13 +149,14 @@ body::before{
   white-space:nowrap;
 }
 
-/* SMALLER LOGO ON VERY SMALL SCREENS */
+/* RESPONSIVE LOGO SIZING */
 @media (max-width:640px){ .site-logo{ width:110px; } }
 @media (min-width:641px) and (max-width:1024px){ .site-logo{ width:140px; } }
 
-/* ============================================================
-   MAIN CONTAINER
-   ============================================================ */
+/* ============================
+   MAIN CONTAINER - .container
+   ============================ */
+/* MAIN WRAPPER: <main class="container"> */
 .container{
   max-width: var(--max-width);
   margin: 1.75rem auto;
@@ -155,13 +164,16 @@ body::before{
   -webkit-overflow-scrolling: touch;
 }
 
-/* ============================================================
-   SECTION CONTAINER & TITLES
-   ============================================================ */
+/* ============================
+   SECTION WRAPPER & TITLES - .section-container, .section-title
+   ============================ */
+/* SECTION BLOCK: <section class="section-container" id="..."> */
 .section-container{
   margin-bottom: var(--section-gap);
-  animation: fadeIn 220ms ease-in-out;
+  animation: fadeIn var(--transition) ease-in-out;
 }
+
+/* SECTION TITLE: <h1 class="section-title"> */
 .section-title{
   font-size: clamp(1.25rem, 2vw, 2rem);
   color: var(--text-primary);
@@ -170,12 +182,11 @@ body::before{
   text-align:left;
 }
 
-
-/* ============================================================
-   CARD GRID / JOB GRID
-   - SWITCHES RESPONSIBLY BASED ON DEVICE
-   - USES CSS GRID BY DEFAULT, SWITCH TO FLEX ON SMALL SCREENS
-   ============================================================ */
+/* ============================
+   CARD GRID (GENERAL) - .card-grid
+   HTML: <div class="card-grid" data-segment="...">
+   ============================ */
+/* RESPONSIVE GRID USING AUTO-FIT / MINMAX */
 .card-grid{
   display:grid;
   gap:1rem;
@@ -184,30 +195,30 @@ body::before{
   justify-items:center;
 }
 
-/* RESPONSIVE GRID RULES */
+/* GRID LAYOUT ADJUSTMENTS FOR LARGER VIEWPORTS */
 @media (min-width:1200px){
   .card-grid{ grid-template-columns: repeat(5, 1fr); gap:1.25rem; }
-  .card job-card-grid{ grid-template-columns: repeat(7, 1fr); gap:0.75rem; }
 }
 @media (min-width:1024px) and (max-width:1199px){
   .card-grid{ grid-template-columns: repeat(4, 1fr); }
-  .card job-card-grid{ grid-template-columns: repeat(6, 1fr); }
 }
 @media (min-width:768px) and (max-width:1023px){
   .card-grid{ grid-template-columns: repeat(4, 1fr); }
-  .card job-card-grid{ grid-template-columns: repeat(5, 1fr); }
 }
 @media (max-width:767px){
-  /* USE FLEX STACK FOR SMALL PHONES TO IMPROVE SCROLLING PERFORMANCE */
   .card-grid{ grid-template-columns: repeat(3, 1fr); }
-  .card job-card-grid{ grid-template-columns: repeat(3, 1fr); }
 }
 
+/* SPECIFIC JOB GRID (HTML: <div class="card-grid job-grid">) */
+.job-grid{
+  /* INHERITS .card-grid; ADDITIONAL TWEAKS FOR JOB CARDS */
+  align-items:center;
+}
 
-/* ============================================================
-   CARD STYLES
-   - LIGHTWEIGHT, BACKDROP-FILTER REDUCED ON SMALL DEVICES
-   ============================================================ */
+/* ============================
+   CARD BASE STYLE - .card
+   HTML: <article class="card" ...>
+   ============================ */
 .card{
   min-width: 130px;
   max-width: 170px;
@@ -225,6 +236,8 @@ body::before{
   position:relative;
   min-height: 120px;
 }
+
+/* JOB CARD VARIANT - .job-card (HTML: <article class="card job-card">) */
 .job-card{
   min-width: 130px;
   max-width: 130px;
@@ -242,21 +255,8 @@ body::before{
   position:relative;
   min-height: 120px;
 }
-/* HOVER EFFECT (DISABLED ON TOUCH DEVICES) */
-@media (hover:hover) and (pointer: fine){
-  .card:hover, .job-card:hover{
-    transform: translateY(-6px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.42);
-    border-color: var(--accent-1);
-  }
-}
 
-/* REDUCE BACKDROP-FILTER ON SMALL / LOW-END DEVICES */
-@media (max-width:880px){
-  .card, .job-card{ backdrop-filter: none; box-shadow:none; }
-}
-
-/* CARD HEADINGS */
+/* CARD HEADINGS (IF PRESENT) - .card h2, .job-card h2 */
 .card h2, .job-card h2{
   font-size: 1.05rem;
   font-weight:600;
@@ -264,7 +264,7 @@ body::before{
   margin:0;
 }
 
-/* IMAGE WRAPPER - KEEP ASPECT, OBJECT-FIT CONTAIN */
+/* IMAGE WRAPPER - .img-wrapper (HTML: <div class="img-wrapper">) */
 .img-wrapper{
   margin-top:0.4rem;
   height:140px;
@@ -283,9 +283,23 @@ body::before{
   display:block;
 }
 
-/* ============================================================
-   LIVE INDICATOR (ANIMATED BUT ACCESSIBLE)
-   ============================================================ */
+/* HOVER EFFECT (DISABLED ON TOUCH DEVICES) */
+@media (hover:hover) and (pointer: fine){
+  .card:hover, .job-card:hover{
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.42);
+    border-color: var(--accent-1);
+  }
+}
+
+/* REDUCE BACKDROP-FILTER AND SHADOWS ON SMALL SCREENS */
+@media (max-width:880px){
+  .card, .job-card{ backdrop-filter: none; box-shadow:none; }
+}
+
+/* ============================
+   LIVE INDICATOR - .live (HTML: <p class="live">LIVE</p>)
+   ============================ */
 .live{
   position:absolute;
   top:1rem;
@@ -311,16 +325,16 @@ body::before{
 @keyframes gradSwipe{ to{ background-position:100% 0; } }
 @keyframes livePulse{ 0%{ transform:scale(1);} 50%{ transform:scale(1.25);} 100%{ transform:scale(1);} }
 
-/* ONLY ANIMATE IF PREFERS-REDUCED-MOTION IS NOT SET */
+/* DISABLE ANIMATIONS WHEN PREFERS-REDUCED-MOTION IS SET */
 @media (prefers-reduced-motion: reduce){
   .live{ animation:none; }
   .live::after{ animation:none; }
 }
 
-/* ============================================================
-   STAR BUTTON
-   - SMALL, ACCESSIBLE, WITH ARIA HANDLING (FROM JS)
-   ============================================================ */
+/* ============================
+   STAR BUTTON - .star-btn (HTML: <button class="star-btn">)
+   ============================ */
+/* STAR BUTTON IS PLACED INSIDE CARDS IN HTML */
 .star-btn{
   position:absolute;
   top:10px;
@@ -334,7 +348,7 @@ body::before{
   background: rgba(232,233,225,0.18);
   border:none;
   font-size:1rem;
-  color:var(--text-light);
+  color:#000000;
   cursor:pointer;
   transition: transform var(--transition), color var(--transition), background var(--transition);
   z-index:2;
@@ -342,9 +356,10 @@ body::before{
 .star-btn:hover{ transform: scale(1.05); color: #ffb400; background: rgba(68,68,69,0.85); }
 .star-btn.starred{ color: gold; background: rgba(0,0,0,0.85); }
 
-/* ============================================================
-   JOB FILTERS (TOOLBAR)
-   ============================================================ */
+/* ============================
+   JOB FILTERS TOOLBAR - .job-filters, .filter-btn
+   HTML: <div class="job-filters"> and <button class="filter-btn">
+   ============================ */
 .job-filters{
   display:flex;
   justify-content:center;
@@ -362,11 +377,16 @@ body::before{
   cursor:pointer;
   transition: background var(--transition), transform var(--transition);
 }
-.filter-btn.active, .filter-btn:hover{ background: linear-gradient(90deg, rgba(11, 15, 239, 0.95), rgba(72, 9, 220, 0.845));color:#ffffff; transform: translateY(-2px); }
+.filter-btn.active, .filter-btn:hover{
+  background: linear-gradient(90deg, rgba(11, 15, 239, 0.95), rgba(72, 9, 220, 0.845));
+  color:#ffffff;
+  transform: translateY(-2px);
+}
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
+/* ============================
+   FOOTER - .site-footer, .footer-links, .version-label
+   HTML: <footer class="site-footer"> ... <nav class="footer-links"> ...
+   ============================ */
 .site-footer{
   background: linear-gradient(180deg,#03010a00 0%, #04040c00 100%);
   color: #000000;
@@ -399,26 +419,24 @@ body::before{
 .divider{ color:#000000; font-weight: bold; opacity:0.6; user-select:none; }
 .version-label{ position:absolute; right:12px; bottom:8px; font-size:0.75rem; color:rgba(255,255,255,0.55); pointer-events:none; }
 
-/* FOOTER PADDING ADJUST ON VERY SMALL SCREENS */
+/* FOOTER PADDING ON VERY SMALL SCREENS */
 @media (max-width:500px){ .site-footer{ padding:2rem 0.75rem; } }
 
-/* ============================================================
+/* ============================
    UTILITIES & ACCESSIBILITY
-   ============================================================ */
+   ============================ */
 .hidden{ display:none !important; }
 
-/* FOCUS RING FOR KEYBOARD USERS */
+/* FOCUS RING FOR KEYBOARD NAVIGATION - GLOBAL :focus */
 :focus{ outline: 2px solid var(--accent-1); outline-offset: var(--focus-ring); }
 
-/* SIMPLE FADE-IN */
+/* SIMPLE FADE-IN KEYFRAMES USED BY SECTIONS */
 @keyframes fadeIn{ from{ opacity:0; transform: translateY(8px);} to{ opacity:1; transform:translateY(0);} }
 
-/* ============================================================
+/* ============================
    DEVICE-SPECIFIC BREAKPOINTS / TWEAKS
-   - FOLDING PHONE: TREAT LIKE NARROW TABLET (KEEP COLUMNS LOW)
-   - TV: MAKE LARGER GRID / INCREASE SPACING
-   ============================================================ */
-/* FOLDING PHONE / NARROW TABLET: (WIDTHS ~ 600-860px) */
+   ============================ */
+/* FOLDING PHONE / NARROW TABLET: (WIDTHS ~ 600-880px) */
 @media (min-width:600px) and (max-width:880px){
   .menu-buttons{ gap:0.8rem; grid-auto-rows: auto; }
   .card-grid{ gap:1rem; }
@@ -430,11 +448,3 @@ body::before{
   .card-grid{ gap:1.5rem; grid-template-columns: repeat(5, 1fr); }
   .menu-btn{ min-height:96px; padding:1rem 1.5rem; }
 }
-
-/* ============================================================
-   PERFORMANCE NOTES (DO NOT MODIFY)
-   - LIGHTWEIGHT GRADIENTS, AVOID EXPENSIVE EFFECTS ON SMALL DEVICES
-   - USE WILL-CHANGE SPARINGLY WHEN NECESSARY
-   ============================================================ */
-
-/* END OF STYLESHEET */
