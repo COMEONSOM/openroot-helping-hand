@@ -1,6 +1,6 @@
 // ============================================================
 // OPENROOT HH SCRIPT — PRODUCTION VERSION (ES2023+)
-// VERSION: 1.3.0 — UID-BASED LOCAL STORAGE (NO SERVER DEPENDENCY)
+// VERSION: 1.3.1 — FIXED SEGMENT-ID PERSISTENCE (STABLE STORAGE)
 // ============================================================
 
 /* ============================================================
@@ -103,7 +103,11 @@ class OpenrootApp {
     const segments = Array.from(this.root.querySelectorAll(".card-grid, .job-grid"));
 
     for (const seg of segments) {
-      if (!seg.dataset.segId) seg.dataset.segId = `seg-${Math.random().toString(36).slice(2, 8)}`;
+      // ✅ FIXED: Use stable segment IDs instead of random ones
+      if (!seg.dataset.segId) {
+        const label = seg.getAttribute("id") || seg.className || "segment";
+        seg.dataset.segId = label.replace(/\s+/g, "_").toLowerCase();
+      }
 
       const segCards = Array.from(seg.querySelectorAll(".card, .job-card"));
       segCards.forEach((card, idx) => {
