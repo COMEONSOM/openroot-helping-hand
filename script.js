@@ -1,30 +1,24 @@
 // ============================================================
 // OPENROOT HH SCRIPT — PRODUCTION VERSION (ES2023+)
-// VERSION: 1.3.2 — STRONG UID RESOLUTION & PER-USER STORAGE FIX
+// VERSION: 1.3.3 — FIX: STAR TOGGLE RELIABILITY + DEBUG
 // ============================================================
 
 /* ============================================================
    STEP 1 — IDENTIFY USER (VIA ?uid=XYZ OR SITE STORAGE)
-   - Priority: URL 'uid' param -> main-site key 'openrootUserUID' ->
-     cached 'openroot_current_uid' -> 'guest_user'
-   - If UID changes (across tabs), we reload to ensure correct data
    ============================================================ */
 
 let USER_UID = null;
 
-// Helper: read uid from URL (decoded automatically by URLSearchParams)
 const urlParams = new URLSearchParams(window.location.search);
 const uidFromUrl = urlParams.get("uid") || urlParams.get("user") || null;
 
-// Helper: read uid from main-site storage keys
 const uidFromMainSite =
   (typeof window !== "undefined" && (localStorage.getItem("openrootUserUID") || sessionStorage.getItem("openrootUserUID"))) ||
   null;
 
-// Helper: previously cached uid used by this subsite
 const cachedUid = (typeof window !== "undefined" && localStorage.getItem("openroot_current_uid")) || null;
 
-// Resolve UID: prefer URL → main-site → cached → guest_user
+// Resolve UID priority: URL -> main-site -> cached -> guest
 if (uidFromUrl) {
   USER_UID = decodeURIComponent(uidFromUrl);
 } else if (uidFromMainSite) {
@@ -35,7 +29,6 @@ if (uidFromUrl) {
   USER_UID = "guest_user";
 }
 
-// If UID came from URL or main site, persist as the subsite's current uid
 try {
   if (USER_UID && USER_UID !== cachedUid) {
     localStorage.setItem("openroot_current_uid", USER_UID);
@@ -44,7 +37,7 @@ try {
   console.warn("UID persist failed:", e);
 }
 
-// Listen for changes in the main-site UID (storage event) and reload if it changes
+// Listen for storage changes of UID and reload to sync state
 window.addEventListener("storage", (ev) => {
   try {
     if (ev.key === "openrootUserUID" || ev.key === "openroot_current_uid") {
@@ -52,9 +45,7 @@ window.addEventListener("storage", (ev) => {
       if (!newUid) return;
       if (newUid !== USER_UID) {
         console.log("🔁 Detected UID change via storage. Reloading subsite for UID:", newUid);
-        // Update local and force reload to load the correct per-user state
         localStorage.setItem("openroot_current_uid", newUid);
-        // Small delay to allow storage propagation
         setTimeout(() => window.location.reload(), 80);
       }
     }
@@ -67,10 +58,9 @@ window.addEventListener("storage", (ev) => {
    STEP 2 — DEFINE STORAGE KEY (UNIQUE PER USER)
    ============================================================ */
 
-// Use a function so we always compute with the active USER_UID
+const MAX_STARS = 5;
 const getStorageKey = () => `starredCards_${USER_UID}`;
 
-// Useful debug message
 console.log("✅ OPENROOT APP INITIALIZED FOR UID:", USER_UID);
 
 /* ============================================================
@@ -82,6 +72,7 @@ const Storage = {
     try {
       const key = getStorageKey();
       const raw = localStorage.getItem(key);
+      console.debug("Storage.get key=", key, "raw=", raw);
       return raw ? JSON.parse(raw) : fallback;
     } catch (err) {
       console.warn("STORAGE.GET ERROR:", err);
@@ -92,6 +83,7 @@ const Storage = {
     try {
       const key = getStorageKey();
       localStorage.setItem(key, JSON.stringify(value));
+      console.debug("Storage.set key=", key, "value=", value);
     } catch (err) {
       console.warn("STORAGE.SET ERROR:", err);
     }
@@ -99,7 +91,7 @@ const Storage = {
 };
 
 /* ============================================================
-   STEP 4 — MAIN APP CLASS (UNCHANGED LOGIC; STORAGE KEY UPDATED)
+   STEP 4 — MAIN APP CLASS (with defensive fixes)
    ============================================================ */
 
 class OpenrootApp {
@@ -122,7 +114,11 @@ class OpenrootApp {
     const saved = await Storage.get({});
     if (saved && typeof saved === "object") {
       for (const [segId, ids] of Object.entries(saved)) {
-        this.starredMap.set(segId, new Set(ids));
+        try {
+          this.starredMap.set(segId, new Set(ids));
+        } catch (e) {
+          console.warn("Failed to restore segment set for", segId, e);
+        }
       }
     }
 
@@ -147,7 +143,6 @@ class OpenrootApp {
     const segments = Array.from(this.root.querySelectorAll(".card-grid, .job-grid"));
 
     for (const seg of segments) {
-      // ✅ FIXED: Use stable segment IDs instead of random ones
       if (!seg.dataset.segId) {
         const label = seg.getAttribute("id") || seg.className || "segment";
         seg.dataset.segId = label.replace(/\s+/g, "_").toLowerCase();
@@ -186,10 +181,22 @@ class OpenrootApp {
   }
 
   onContainerClick(ev) {
+    // Debug: show what was clicked
+    try {
+      const clicked = ev.target;
+      console.debug("onContainerClick target:", clicked);
+    } catch {}
+
     const starBtn = ev.target.closest(".star-btn");
     if (starBtn) {
       ev.stopPropagation();
-      this.toggleStar(starBtn).catch((err) => console.error("TOGGLE STAR ERROR", err));
+      try {
+        console.debug("Star button clicked:", starBtn);
+        // call toggle with defensive try/catch
+        this.toggleStar(starBtn).catch((err) => console.error("TOGGLE STAR ERROR", err));
+      } catch (err) {
+        console.error("Error running toggleStar:", err);
+      }
       return;
     }
 
@@ -231,42 +238,65 @@ class OpenrootApp {
   }
 
   async toggleStar(starBtn) {
-    const card = starBtn.closest(".card, .job-card");
-    if (!card) return;
-    const id = card.dataset.id;
-    if (!id) return;
+    try {
+      const card = starBtn.closest(".card, .job-card");
+      if (!card) {
+        console.warn("toggleStar: no card container found for starBtn");
+        return;
+      }
+      const id = card.dataset.id;
+      if (!id) {
+        console.warn("toggleStar: card has no dataset.id");
+        return;
+      }
 
-    const seg = this.cardSegmentMap.get(id);
-    if (!seg) return;
-    const segId = seg.dataset.segId;
-    const segSet = this.starredMap.get(segId) || new Set();
+      const seg = this.cardSegmentMap.get(id);
+      if (!seg) {
+        console.warn("toggleStar: no segment found for card id", id);
+        return;
+      }
+      const segId = seg.dataset.segId;
 
-    if (!segSet.has(id) && segSet.size >= MAX_STARS) {
-      const confirmRemove = window.confirm(
-        `YOU CAN ONLY STAR UP TO ${MAX_STARS} CARDS IN THIS SECTION. REMOVE ONE TO ADD A NEW ONE!`
-      );
-      if (!confirmRemove) return;
-      const oldest = segSet.values().next().value;
-      if (oldest) segSet.delete(oldest);
+      // Ensure segment's Set exists
+      if (!this.starredMap.has(segId)) this.starredMap.set(segId, new Set());
+      const segSet = this.starredMap.get(segId);
+
+      // Enforce max / remove oldest if needed
+      if (!segSet.has(id) && segSet.size >= MAX_STARS) {
+        const confirmRemove = window.confirm(
+          `YOU CAN ONLY STAR UP TO ${MAX_STARS} CARDS IN THIS SECTION. REMOVE ONE TO ADD A NEW ONE!`
+        );
+        if (!confirmRemove) return;
+        const oldest = segSet.values().next().value;
+        if (oldest) segSet.delete(oldest);
+      }
+
+      if (segSet.has(id)) {
+        segSet.delete(id);
+        this.updateStarAttr(starBtn, false);
+      } else {
+        segSet.add(id);
+        this.updateStarAttr(starBtn, true);
+      }
+
+      this.starredMap.set(segId, segSet);
+
+      const toSave = {};
+      for (const [k, set] of this.starredMap.entries()) {
+        toSave[k] = Array.from(set);
+      }
+
+      // Save (defensive)
+      try {
+        await Storage.set(toSave);
+      } catch (err) {
+        console.warn("Failed to save starredMap:", err);
+      }
+
+      this.repositionCard(card);
+    } catch (err) {
+      console.error("toggleStar top-level error:", err);
     }
-
-    if (segSet.has(id)) {
-      segSet.delete(id);
-      this.updateStarAttr(starBtn, false);
-    } else {
-      segSet.add(id);
-      this.updateStarAttr(starBtn, true);
-    }
-
-    this.starredMap.set(segId, segSet);
-
-    const toSave = {};
-    for (const [k, set] of this.starredMap.entries()) {
-      toSave[k] = Array.from(set);
-    }
-    await Storage.set(toSave);
-
-    this.repositionCard(card);
   }
 
   reorderSegment(segmentEl) {
@@ -407,7 +437,6 @@ class OpenrootApp {
     const app = new OpenrootApp(document);
     await app.init();
     window.__openrootApp = app;
-    // (Already logged above at UID resolution)
   } catch (err) {
     console.error("APP INIT ERROR", err);
   }
