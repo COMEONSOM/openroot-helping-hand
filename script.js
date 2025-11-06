@@ -97,6 +97,7 @@ const Storage = {
 class OpenrootApp {
   constructor(root = document) {
     this.root = root;
+    this.MAX_STARS = 5;
     this.container = root.querySelector("main.container") ?? document.body;
     this.starredMap = new Map();
     this.cardSegmentMap = new Map();
