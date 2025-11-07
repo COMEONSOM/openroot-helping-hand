@@ -58,7 +58,8 @@ body{
   background: var(--page-bg);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  overflow-x:hidden;
+  overflow-x:show;
+  overflow-y: scroll;
   contain: layout style size; /* PERFORMANCE ISOLATION */
 }
 
