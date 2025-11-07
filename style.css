@@ -26,7 +26,7 @@
   --card-bg: rgba(32,32,36,0.14);
   --card-border: rgba(255,255,255,0.12);
   --card-radius: 12px;
-  --card-padding: 0.5rem;
+  --card-padding: 0.4rem;
 
   /* SIZING & LAYOUT */
   --max-width: 100%;
@@ -58,8 +58,7 @@ body{
   background: var(--page-bg);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  overflow-x:show;
-  overflow-y: scroll;
+  overflow-x:hidden;
   contain: layout style size; /* PERFORMANCE ISOLATION */
 }
 
@@ -192,7 +191,7 @@ body::before{
 /* RESPONSIVE GRID USING AUTO-FIT / MINMAX */
 .card-grid{
   display:grid;
-  gap:1rem;
+  gap:0.75rem;
   grid-template-columns: repeat(auto-fit, minmax(min(var(--card-max), 100%), 1fr));
   align-items:start;
   justify-items:center;
@@ -200,10 +199,10 @@ body::before{
 
 /* GRID LAYOUT ADJUSTMENTS FOR LARGER VIEWPORTS */
 @media (min-width:1200px){
-  .card-grid{ grid-template-columns: repeat(5, 1fr); gap:1.25rem; }
+  .card-grid{ grid-template-columns: repeat(7, 1fr); gap:1.25rem; }
 }
 @media (min-width:1024px) and (max-width:1199px){
-  .card-grid{ grid-template-columns: repeat(4, 1fr); }
+  .card-grid{ grid-template-columns: repeat(5, 1fr); }
 }
 @media (min-width:768px) and (max-width:1023px){
   .card-grid{ grid-template-columns: repeat(4, 1fr); }
@@ -223,9 +222,8 @@ body::before{
    HTML: <article class="card" ...>
    ============================ */
 .card{
-  min-width: 130px;
-  max-width: 170px;
-  max-height: 50px;
+  max-width: 140px;
+  max-height: 100px;
   background: #34362c81;
   border: 1px solid var(--card-border);
   border-radius: var(--card-radius);
@@ -237,18 +235,16 @@ body::before{
   overflow:hidden;
   align-items:stretch;
   position:relative;
-  min-height: 120px;
 }
 
 /* JOB CARD VARIANT - .job-card (HTML: <article class="card job-card">) */
 .job-card{
-  min-width: 130px;
-  max-width: 130px;
-  max-height: 50px;
+  max-width: 120px;
+  max-height: 100px;
   background: #ffffff;
   border: 1px solid var(--card-border);
   border-radius: var(--card-radius);
-  padding: var(--card-padding);
+  padding: 15px;
   display:flex;
   flex-direction:column;
   transition: transform var(--transition), box-shadow var(--transition);
@@ -256,7 +252,6 @@ body::before{
   overflow:hidden;
   align-items:stretch;
   position:relative;
-  min-height: 120px;
 }
 
 /* CARD HEADINGS (IF PRESENT) - .card h2, .job-card h2 */
