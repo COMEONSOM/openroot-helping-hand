@@ -137,6 +137,8 @@ body::before{
   width: 120px;
   height: auto;
   display:block;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 /* LOGO TEXT: <span class="logo-text"> */

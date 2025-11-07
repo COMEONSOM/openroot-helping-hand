@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300">
-  <style>
-    .wm { font-family: "Raleway", sans-serif; font-weight: 800; font-size:180px; letter-spacing:-6px; fill:#16324F; }
-  </style>
-  <g transform="translate(50,210)">
-    <text class="wm">openroot</text>
-    <rect x="864" y="-20" width="32" height="32" rx="3" ry="3" fill="#C8F000"/>
-  </g>
-</svg>
