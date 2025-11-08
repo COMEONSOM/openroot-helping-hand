@@ -429,6 +429,8 @@ class OpenrootApp {
   }
 }
 
+
+
 /* ============================================================
    STEP 5 — BOOTSTRAP APPLICATION
    ============================================================ */
@@ -442,3 +444,72 @@ class OpenrootApp {
     console.error("APP INIT ERROR", err);
   }
 })();
+
+// ───────────────────────────────────────────────
+// LIGHT-SPEED GSAP HAMBURGER ANIMATION
+// ───────────────────────────────────────────────
+
+const menuBtn = document.getElementById("menuBtn");
+const menuDropdown = document.getElementById("menuDropdown");
+const lines = menuBtn.querySelectorAll(".menu-line");
+
+// ultra-short timeline for instant feedback
+const tl = gsap.timeline({ paused: true, reversed: true });
+
+tl.to(lines[0], {
+  y: 5,
+  rotation: 45,
+  transformOrigin: "center center",
+  duration: 0.05, // ⚡ lightning quick
+  ease: "none",
+})
+  .to(
+    lines[1],
+    { opacity: 0, duration: 0.03, ease: "none" },
+    "-=0.04"
+  )
+  .to(
+    lines[2],
+    {
+      y: -5,
+      rotation: -45,
+      transformOrigin: "center center",
+      duration: 0.05,
+      ease: "none",
+    },
+    "-=0.05"
+  );
+
+// toggle open/close instantly
+menuBtn.addEventListener("click", () => {
+  const isOpen = menuDropdown.classList.toggle("open");
+  menuBtn.classList.toggle("open");
+  menuBtn.setAttribute("aria-expanded", isOpen);
+  menuDropdown.setAttribute("aria-hidden", !isOpen);
+
+  // instant sync
+  tl.reversed() ? tl.play(0) : tl.reverse(0);
+});
+
+// magnetic hover (still feels natural)
+const strength = 25;
+menuBtn.addEventListener("mousemove", (e) => {
+  const rect = menuBtn.getBoundingClientRect();
+  const x = e.clientX - rect.left - rect.width / 2;
+  const y = e.clientY - rect.top - rect.height / 2;
+  gsap.to(menuBtn, {
+    x: x / 10,
+    y: y / 10,
+    duration: 0.1,
+    ease: "power1.out",
+  });
+});
+
+menuBtn.addEventListener("mouseleave", () => {
+  gsap.to(menuBtn, {
+    x: 0,
+    y: 0,
+    duration: 0.15,
+    ease: "elastic.out(1, 0.7)",
+  });
+});

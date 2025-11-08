@@ -4,9 +4,9 @@
    NOTES: ALL Comments ARE IN ALL CAPS AND MAP TO HTML CLASSES
    ============================================================ */
 
-/* ============================
+/* ───────────────────────────────────────────────
    THEME VARIABLES (ROOT) - :root
-   ============================ */
+─────────────────────────────────────────────── */
 :root{
   /* PRIMARY COLORS */
   --white: #ffffff;
@@ -43,10 +43,9 @@
   --focus-ring: 3px;
 }
 
-/* ============================
+/* ───────────────────────────────────────────────
    RESET / BASE - HTML, BODY, GLOBAL
-   ============================ */
-/* APPLIES TO html, body, AND ALL ELEMENTS */
+─────────────────────────────────────────────── */
 *,
 *::before,
 *::after { box-sizing: border-box; }
@@ -82,10 +81,10 @@ body::before{
   z-index:-1;
 }
 
-/* ============================
+/* ───────────────────────────────────────────────
    TECH ORBS (DECORATIVE) - .tech-orb
-   ============================ */
-/* AMBIENT ORBS ADDED IN HTML AS <div class="tech-orb"> */
+   AMBIENT ORBS ADDED IN HTML AS <div class="tech-orb">
+─────────────────────────────────────────────── */
 .tech-orb{
   position:fixed;
   width:150px;
@@ -107,58 +106,297 @@ body::before{
   body::before{ opacity:0.05; backdrop-filter:none; }
 }
 
-/* ============================
+/* ───────────────────────────────────────────────
    SITE HEADER & LOGO - .site-header, .logo-wrapper, .site-logo, .logo-text
-   ============================ */
-/* HEADER ELEMENT FROM HTML: <header class="site-header"> */
-.site-header{
-  position:sticky;
-  top:0;
-  z-index:40;
-  display:flex;
-  align-items:center;
-  gap:1rem;
-  padding:0.75rem 1rem;
-  background: rgba(9,14,23,0.86);
-  border-bottom: 1px solid var(--card-border);
-  backdrop-filter: blur(6px);
+   HEADER ELEMENT FROM HTML: <header class="site-header"> 
+─────────────────────────────────────────────── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 76px;
+  background: rgba(9, 14, 23, 0.879);
+  color: var(--clr-text);
+  box-shadow: var(--header-shadow);
+  padding: 0.5rem var(--spacing-unit);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  animation: headerFadeIn 0.8s ease-out both;
 }
-
-/* LOGO WRAPPER: <div class="logo-wrapper"> */
-.logo-wrapper{
-  display:flex;
-  align-items:center;
-  gap:0.6rem;
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   max-height:56px;
 }
-
-/* SITE LOGO IMAGE: <img class="site-logo"> */
-.site-logo{
+.site-logo {
   width: 120px;
   height: auto;
+  object-fit: contain;
   display:block;
   margin-top: 10px;
   margin-bottom: 10px;
 }
-
-/* LOGO TEXT: <span class="logo-text"> */
-.logo-text{
-  color:var(--white);
-  font-weight:700;
-  font-size:1rem;
-  letter-spacing:0.4px;
-  user-select:none;
-  white-space:nowrap;
+.logo-text {
+  font-family: var(--font-family);
+  font-size: var(--font-size-logo);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--clr-accent);
+  user-select: none;
 }
 
-/* RESPONSIVE LOGO SIZING */
-@media (max-width:640px){ .site-logo{ width:110px; } }
-@media (min-width:641px) and (max-width:1024px){ .site-logo{ width:140px; } }
+/* ───────────────────────────────────────────────
+   NAVIGATION BASE STRUCTURE MENU
+─────────────────────────────────────────────── */
+.navbar {
+  margin-left: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.menu-btn {
+  position: relative;
+  width: 4rem;
+  height: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: transparent;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+  transition: transform 0.2s ease;
+  perspective: 800px;
+  -webkit-tap-highlight-color: transparent; /* removes blue flash on mobile */
+}
+.menu-btn:hover {
+  transform: scale(1.08);
+}
+.menu-btn.open .menu-line:nth-child(2) {
+  opacity: 0;
+}
+#menuBtn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+#menuBtn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 3px;
+}
+/* MENU BUTTON FOR SMALL SCREENS */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  background: transparent;
+  border: 2px solid var(--clr-accent);
+  color: var(--clr-accent);
+  font-size: 1.5rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  position: relative;
+  width: 2rem;
+  height: 1.5rem;
+  z-index: 1001;
+  perspective: 800px;
+}
+.menu-toggle:hover {
+  background: var(--clr-accent);
+  color: var(--clr-bg-header);
+  transform: scale(1.1);
+}
+.menu-toggle.open .menu-line:nth-child(2) {
+  opacity: 0;
+}
+.menu-dropdown {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing-unit) * 1.2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.menu-dropdown a {
+  font-family: var(--font-family);
+  font-size: var(--font-size-menu);
+  text-decoration: none;
+  color: var(--clr-text);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  position: relative;
+  transition: color var(--transition-fast);
+}
+.menu-dropdown a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: var(--clr-accent);
+  transition: width var(--transition-fast);
+}
+.menu-dropdown a:hover {
+  color: #00f0ff;
+}
+.menu-dropdown a:hover::after {
+  width: 100%;
+}
+menu-toggle:focus,
+.menu-dropdown a:focus {
+  outline: 2px solid var(--clr-accent);
+  outline-offset: 3px;
+}
+@keyframes glowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px var(--accent-color, #00f0ff));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px var(--accent-color, #00f0ff));
+  }
+}
+@keyframes headerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.menu-line {
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.08s ease-out;
+}
 
-/* ============================
+/* Base: hidden on mobile */
+@media (max-width: 768px) {
+  .site-header {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+  }
+  .menu-toggle {
+    display: flex;
+  }
+  /* USE GRID FOR STACKED LAYOUT TO HANDLE WRAPPING BETTER */
+  .menu-dropdown {
+    width: 80%;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.436); /* Softer transparency for realism */
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+    width: 160px;
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--transition-fast);
+    z-index: 9999;
+  }
+  .menu-dropdown a {
+    padding: 0.5rem 0;
+    font-size: 1rem;
+    text-align: right;
+  }
+  .menu-dropdown li {
+    width: 100%;
+    align-items: center;
+    text-align: left;
+  }
+  .menu-dropdown li a {
+    display: block;
+    width: 100%;
+    background: #b43af6;
+    border-radius: 10px;
+    text-align: center;
+    padding: 0.5rem 0;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    background: rgba(1, 7, 52, 0.114); /* purple tint with transparency */
+    backdrop-filter: blur(10px) saturate(160%);
+    -webkit-backdrop-filter: blur(10px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05),
+                0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .menu-dropdown.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  nav ul,
+  .nav-links {
+    display: none;
+  }
+  @keyframes dropdownFade {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* ── MEDIUM SCREENS: TABLET LANDSCAPE & SMALL LAPTOP ── */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .menu-dropdown {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  .menu-dropdown a {
+    font-size: 0.95rem;
+  }
+}
+
+/* ── LARGE SCREENS: LAPTOP, DESKTOP, ULTRA-WIDE, TV ── */
+@media (min-width: 1201px) {
+  .menu-dropdown {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.2rem;
+  }
+  .menu-dropdown a {
+    font-size: 1rem;
+  }
+  .site-header {
+    padding: 0.8rem 2rem;
+  }
+}
+.visually-hidden {
+  position: absolute;
+  left: -9999px;
+}
+
+/* ───────────────────────────────────────────────
    MAIN CONTAINER - .container
-   ============================ */
-/* MAIN WRAPPER: <main class="container"> */
+   MAIN WRAPPER: <main class="container">
+────────────────────────────────────────────── */
 .container{
   max-width: var(--max-width);
   margin: 1.75rem auto;
@@ -166,16 +404,14 @@ body::before{
   -webkit-overflow-scrolling: touch;
 }
 
-/* ============================
+/* ───────────────────────────────────────────────
    SECTION WRAPPER & TITLES - .section-container, .section-title
-   ============================ */
-/* SECTION BLOCK: <section class="section-container" id="..."> */
+   SECTION BLOCK: <section class="section-container"
+────────────────────────────────────────────── */
 .section-container{
   margin-bottom: var(--section-gap);
   animation: fadeIn var(--transition) ease-in-out;
 }
-
-/* SECTION TITLE: <h1 class="section-title"> */
 .section-title{
   font-size: clamp(1.25rem, 2vw, 2rem);
   color: var(--text-primary);
@@ -184,43 +420,10 @@ body::before{
   text-align:left;
 }
 
-/* ============================
-   CARD GRID (GENERAL) - .card-grid
-   HTML: <div class="card-grid" data-segment="...">
-   ============================ */
-/* RESPONSIVE GRID USING AUTO-FIT / MINMAX */
-.card-grid{
-  display:grid;
-  gap:0.75rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(var(--card-max), 100%), 1fr));
-  align-items:start;
-  justify-items:center;
-}
-
-/* GRID LAYOUT ADJUSTMENTS FOR LARGER VIEWPORTS */
-@media (min-width:1200px){
-  .card-grid{ grid-template-columns: repeat(7, 1fr); gap:1.25rem; }
-}
-@media (min-width:1024px) and (max-width:1199px){
-  .card-grid{ grid-template-columns: repeat(5, 1fr); }
-}
-@media (min-width:768px) and (max-width:1023px){
-  .card-grid{ grid-template-columns: repeat(4, 1fr); }
-}
-@media (max-width:767px){
-  .card-grid{ grid-template-columns: repeat(3, 1fr); }
-}
-
-/* SPECIFIC JOB GRID (HTML: <div class="card-grid job-grid">) */
-.job-grid{
-  /* INHERITS .card-grid; ADDITIONAL TWEAKS FOR JOB CARDS */
-  align-items:center;
-}
-
-/* ============================
+/* ───────────────────────────────────────────────
    CARD BASE STYLE - .card
    HTML: <article class="card" ...>
-   ============================ */
+────────────────────────────────────────────── */
 .card{
   max-width: 140px;
   max-height: 100px;
@@ -236,8 +439,6 @@ body::before{
   align-items:stretch;
   position:relative;
 }
-
-/* JOB CARD VARIANT - .job-card (HTML: <article class="card job-card">) */
 .job-card{
   max-width: 120px;
   max-height: 100px;
@@ -253,16 +454,12 @@ body::before{
   align-items:stretch;
   position:relative;
 }
-
-/* CARD HEADINGS (IF PRESENT) - .card h2, .job-card h2 */
 .card h2, .job-card h2{
   font-size: 1.05rem;
   font-weight:600;
   color: var(--text-primary);
   margin:0;
 }
-
-/* IMAGE WRAPPER - .img-wrapper (HTML: <div class="img-wrapper">) */
 .img-wrapper{
   margin-top:0.4rem;
   height:140px;
@@ -280,8 +477,29 @@ body::before{
   border-radius:10px;
   display:block;
 }
-
-/* HOVER EFFECT (DISABLED ON TOUCH DEVICES) */
+.card-grid{
+  display:grid;
+  gap:0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--card-max), 100%), 1fr));
+  align-items:start;
+  justify-items:center;
+}
+.job-grid{
+  align-items:center;
+}
+/* GRID LAYOUT ADJUSTMENTS FOR LARGER VIEWPORTS */
+@media (min-width:1200px){
+  .card-grid{ grid-template-columns: repeat(7, 1fr); gap:1.25rem; }
+}
+@media (min-width:1024px) and (max-width:1199px){
+  .card-grid{ grid-template-columns: repeat(5, 1fr); }
+}
+@media (min-width:768px) and (max-width:1023px){
+  .card-grid{ grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width:767px){
+  .card-grid{ grid-template-columns: repeat(3, 1fr); }
+}
 @media (hover:hover) and (pointer: fine){
   .card:hover, .job-card:hover{
     transform: translateY(-6px);
@@ -289,15 +507,13 @@ body::before{
     border-color: var(--accent-1);
   }
 }
-
-/* REDUCE BACKDROP-FILTER AND SHADOWS ON SMALL SCREENS */
 @media (max-width:880px){
   .card, .job-card{ backdrop-filter: none; box-shadow:none; }
 }
 
-/* ============================
-   LIVE INDICATOR - .live (HTML: <p class="live">LIVE</p>)
-   ============================ */
+/* ───────────────────────────────────────────────
+   LIVE INDICATOR
+────────────────────────────────────────────── */
 .live{
   position:absolute;
   top:1rem;
@@ -322,17 +538,14 @@ body::before{
 }
 @keyframes gradSwipe{ to{ background-position:100% 0; } }
 @keyframes livePulse{ 0%{ transform:scale(1);} 50%{ transform:scale(1.25);} 100%{ transform:scale(1);} }
-
-/* DISABLE ANIMATIONS WHEN PREFERS-REDUCED-MOTION IS SET */
 @media (prefers-reduced-motion: reduce){
   .live{ animation:none; }
   .live::after{ animation:none; }
 }
 
-/* ============================
-   STAR BUTTON - .star-btn (HTML: <button class="star-btn">)
-   ============================ */
-/* STAR BUTTON IS PLACED INSIDE CARDS IN HTML */
+/* ───────────────────────────────────────────────
+   STAR BUTTON
+────────────────────────────────────────────── */
 .star-btn{
   position:absolute;
   top:10px;
@@ -354,10 +567,9 @@ body::before{
 .star-btn:hover{ transform: scale(1.05); color: #ffb400; background: rgba(68,68,69,0.85); }
 .star-btn.starred{ color: gold; background: rgba(0,0,0,0.85); }
 
-/* ============================
+/* ───────────────────────────────────────────────
    JOB FILTERS TOOLBAR - .job-filters, .filter-btn
-   HTML: <div class="job-filters"> and <button class="filter-btn">
-   ============================ */
+────────────────────────────────────────────── */
 .job-filters{
   display:flex;
   justify-content:center;
@@ -381,10 +593,9 @@ body::before{
   transform: translateY(-2px);
 }
 
-/* ============================
+/* ───────────────────────────────────────────────
    FOOTER - .site-footer, .footer-links, .version-label
-   HTML: <footer class="site-footer"> ... <nav class="footer-links"> ...
-   ============================ */
+────────────────────────────────────────────── */
 .site-footer{
   background: linear-gradient(180deg,#03010a00 0%, #04040c00 100%);
   color: #000000;
@@ -416,33 +627,36 @@ body::before{
 .footer-links a:hover::after{ width:100%; left:0; }
 .divider{ color:#000000; font-weight: bold; opacity:0.6; user-select:none; }
 .version-label{ position:absolute; right:12px; bottom:8px; font-size:0.75rem; color:rgba(255,255,255,0.55); pointer-events:none; }
-
-/* FOOTER PADDING ON VERY SMALL SCREENS */
-@media (max-width:500px){ .site-footer{ padding:2rem 0.75rem; } }
-
-/* ============================
-   UTILITIES & ACCESSIBILITY
-   ============================ */
 .hidden{ display:none !important; }
-
-/* FOCUS RING FOR KEYBOARD NAVIGATION - GLOBAL :focus */
 :focus{ outline: 2px solid var(--accent-1); outline-offset: var(--focus-ring); }
 
-/* SIMPLE FADE-IN KEYFRAMES USED BY SECTIONS */
-@keyframes fadeIn{ from{ opacity:0; transform: translateY(8px);} to{ opacity:1; transform:translateY(0);} }
-
-/* ============================
+/* ───────────────────────────────────────────────
    DEVICE-SPECIFIC BREAKPOINTS / TWEAKS
-   ============================ */
+────────────────────────────────────────────── */
 /* FOLDING PHONE / NARROW TABLET: (WIDTHS ~ 600-880px) */
 @media (min-width:600px) and (max-width:880px){
   .menu-buttons{ gap:0.8rem; grid-auto-rows: auto; }
   .card-grid{ gap:1rem; }
 }
-
 /* LARGER SCREENS / TV (EXTRA SPACING) */
 @media (min-width:1600px){
   .container{ max-width: 1500px; }
   .card-grid{ gap:1.5rem; grid-template-columns: repeat(5, 1fr); }
   .menu-btn{ min-height:96px; padding:1rem 1.5rem; }
+}
+
+/* FOOTER PADDING ON VERY SMALL SCREENS */
+@media (max-width:500px){ .site-footer{ padding:2rem 0.75rem; } }
+/* SIMPLE FADE-IN KEYFRAMES USED BY SECTIONS */
+@keyframes fadeIn{ from{ opacity:0; transform: translateY(8px);} to{ opacity:1; transform:translateY(0);} }
+
+/* ───────────────────────────────────────────────
+   OFFSET SECTIONS FOR STICKY HEADER
+────────────────────────────────────────────────── */
+:target {
+  scroll-margin-top: 6rem; /* Adjust this value to match your header height */
+}
+/* Or apply globally to all section containers */
+.section-container {
+  scroll-margin-top: 6rem; /* This ensures correct spacing when navigating */
 }
