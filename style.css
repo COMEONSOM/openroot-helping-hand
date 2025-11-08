@@ -282,7 +282,7 @@ menu-toggle:focus,
 }
 
 /* Base: hidden on mobile */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .site-header {
     flex-wrap: wrap;
     justify-content: space-between;
@@ -361,21 +361,8 @@ menu-toggle:focus,
   }
 }
 
-/* ── MEDIUM SCREENS: TABLET LANDSCAPE & SMALL LAPTOP ── */
-@media (min-width: 769px) and (max-width: 1200px) {
-  .menu-dropdown {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 1rem;
-  }
-  .menu-dropdown a {
-    font-size: 0.95rem;
-  }
-}
-
 /* ── LARGE SCREENS: LAPTOP, DESKTOP, ULTRA-WIDE, TV ── */
-@media (min-width: 1201px) {
+@media (min-width: 1001px) {
   .menu-dropdown {
     display: flex;
     justify-content: flex-end;
@@ -623,12 +610,45 @@ menu-toggle:focus,
 .footer-links{ display:flex; justify-content:center; gap:0.4rem; margin-top:1rem; }
 .footer-links a{ color:#000000; font-weight: bolder; text-decoration:none; font-weight:600; position:relative; font-size:0.9rem; }
 .footer-links a::after{ content:""; position:absolute; bottom:-2px; left:50%; width:0; height:2px; background:var(--accent-1); transition:all 260ms ease; }
-.footer-links a:hover{ color:#fff; }
+.footer-links a:hover{ color:#fff; transform: scale(1.04);}
 .footer-links a:hover::after{ width:100%; left:0; }
 .divider{ color:#000000; font-weight: bold; opacity:0.6; user-select:none; }
 .version-label{ position:absolute; right:12px; bottom:8px; font-size:0.75rem; color:rgba(255,255,255,0.55); pointer-events:none; }
 .hidden{ display:none !important; }
 :focus{ outline: 2px solid var(--accent-1); outline-offset: var(--focus-ring); }
+/* Remove blue border/box and highlight when links are clicked or tapped */
+.footer-links a {
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent; /* Removes mobile blue tap flash */
+}
+/* Suppress browser focus ring on click */
+.footer-links a:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+/* Optional: custom focus effect for keyboard users (accessible + aesthetic) */
+.footer-links a:focus-visible {
+  outline: none;
+  position: relative;
+}
+.footer-links a:focus-visible::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -3px;
+  width: 40%;
+  height: 2px;
+  background: var(--accent-1);
+  transform: translateX(-50%);
+  box-shadow: 0 0 10px var(--accent-1);
+  border-radius: 4px;
+  animation: focusGlow 0.8s ease-out;
+}
+@keyframes focusGlow {
+  0% { opacity: 0; transform: translateX(-50%) scaleX(0.4); }
+  100% { opacity: 1; transform: translateX(-50%) scaleX(1); }
+}
 
 /* ───────────────────────────────────────────────
    DEVICE-SPECIFIC BREAKPOINTS / TWEAKS
