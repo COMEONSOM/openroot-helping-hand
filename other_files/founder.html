@@ -166,14 +166,14 @@
       const hostname = window.location.hostname;
 
       // ✅ Updated logic as per request
-      if (hostname.includes("ulvoxo.com")) {
+      if (hostname.includes("https://ulvoxo.com/")) {
         // From ULVOXO → show "Visit OPENROOT CLASSES"
         container.innerHTML = `
           <a href="${LINK_OPENROOTCLASSES}" 
              class="inline-block bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700">
              Visit OPENROOT CLASSES
           </a>`;
-      } else if (hostname.includes("openroot-classes.web.app")) {
+      } else if (hostname.includes("https://openroot-classes.web.app/")) {
         // From OPENROOT CLASSES → show "Visit OPENROOT HYPERSITE"
         container.innerHTML = `
           <a href="${LINK_OPENROOTHYPERSITE}" 
