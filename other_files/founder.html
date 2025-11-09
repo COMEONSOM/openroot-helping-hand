@@ -156,43 +156,21 @@
 
     <!-- Buttons now live INSIDE this section -->
     <div id="button-container" class="flex justify-center space-x-4">
-      <!-- injected via JS -->
+      <!-- Only the main visit button remains -->
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
   <script>
     AOS.init({ duration: 800, once: true });
 
-    const ref = document.referrer;
     const container = document.getElementById('button-container');
-
     const LINK_OPENROOTCLASSES = "https://openroot-classes.web.app/";
     const LINK_OPENROOTHYPERSITE = "https://ulvoxo.com";
 
-    let backLabel = "← Back";
-    let backHref = ref || LINK_OPENROOTHYPERSITE;
-
-    let visitLabel = "";
-    let visitHref = "";
-
-    if (ref.includes("https://ulvoxo.com")) {
-      visitLabel = "Visit OPENROOT CLASSES";
-      visitHref = LINK_OPENROOTCLASSES;
-    } else if (ref.includes("https://openroot-classes.web.app/")) {
-      visitLabel = "Visit OPENROOT HYPERSITE";
-      visitHref = LINK_OPENROOTHYPERSITE;
-    } else {
-      visitLabel = "Visit OPENROOT CLASSES";
-      visitHref = LINK_OPENROOTCLASSES;
-    }
-
-    container.innerHTML = `
-      ${ref ? `<a href="${backHref}" class="inline-block bg-indigo-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-indigo-700 mr-4">${backLabel}</a>` : ""}
-      <a href="${visitHref}" class="inline-block bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700">${visitLabel}</a>
-    `;
+    // Only main visit button logic
+    container.innerHTML = `<a href="${LINK_OPENROOTCLASSES}" class="inline-block bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700">Visit OPENROOT CLASSES</a>`;
   </script>
 
-   
   </section>
 
   <!-- Glow Background Effects -->
