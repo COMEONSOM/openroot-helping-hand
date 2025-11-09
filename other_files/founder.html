@@ -166,26 +166,26 @@
     const ref = document.referrer;
     const container = document.getElementById('button-container');
 
-    const LINK_ULVOXOFINANCE = "https://www.xfactorial.online/";
-    const LINK_ULVOXOMAIN = "https://ulvoxo.web.app/";
+    const LINK_OPENROOTCLASSES = "https://openroot-classes.web.app/";
+    const LINK_OPENROOTHYPERSITE = "https://ulvoxo.com";
 
     let backLabel = "← Back";
-    let backHref = ref || LINK_ULVOXOMAIN;
+    let backHref = ref || LINK_OPENROOTHYPERSITE;
 
     let visitLabel = "";
     let visitHref = "";
 
-    if (ref.includes("https://ulvoxo.web.app/")) {
+    if (ref.includes("https://ulvoxo.com")) {
       backLabel = "← Back";
-      visitLabel = "Visit ULVOXO FINANCE";
-      visitHref = LINK_ULVOXOFINANCE;
-    } else if (ref.includes("https://www.xfactorial.online/")) {
+      visitLabel = "Visit OPENROOT CLASSES";
+      visitHref = LINK_OPENROOTCLASSES;
+    } else if (ref.includes("https://openroot-classes.web.app/")) {
       backLabel = "← Back";
-      visitLabel = "Visit ULVOXO";
-      visitHref = LINK_ULVOXOMAIN;
+      visitLabel = "Visit OPENROOT HYPERSITE";
+      visitHref = LINK_OPENROOTHYPERSITE;
     } else {
-      visitLabel = "Visit ULVOXO FINANCE";
-      visitHref = LINK_ULVOXOFINANCE;
+      visitLabel = "Visit OPENROOT CLASSES";
+      visitHref = LINK_OPENROOTCLASSES;
     }
 
     container.innerHTML = `
