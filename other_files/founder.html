@@ -165,30 +165,27 @@
       const LINK_OPENROOTHYPERSITE = "https://ulvoxo.com";
       const hostname = window.location.hostname;
 
+      // ✅ Updated logic as per request
       if (hostname.includes("ulvoxo.com")) {
-        // If from ULVOXO → show "Visit OPENROOT CLASSES"
+        // From ULVOXO → show "Visit OPENROOT CLASSES"
         container.innerHTML = `
           <a href="${LINK_OPENROOTCLASSES}" 
              class="inline-block bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700">
              Visit OPENROOT CLASSES
           </a>`;
       } else if (hostname.includes("openroot-classes.web.app")) {
-        // If from OPENROOT CLASSES → show "Visit OPENROOT HYPERSITE"
+        // From OPENROOT CLASSES → show "Visit OPENROOT HYPERSITE"
         container.innerHTML = `
           <a href="${LINK_OPENROOTHYPERSITE}" 
              class="inline-block bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700">
              Visit OPENROOT HYPERSITE
           </a>`;
       } else {
-        // Any other source → show both
+        // Any other source → show "Visit OPENROOT CLASSES"
         container.innerHTML = `
           <a href="${LINK_OPENROOTCLASSES}" 
              class="inline-block bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700">
              Visit OPENROOT CLASSES
-          </a>
-          <a href="${LINK_OPENROOTHYPERSITE}" 
-             class="inline-block bg-purple-500 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-600">
-             Visit OPENROOT HYPERSITE
           </a>`;
       }
     </script>
