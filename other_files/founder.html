@@ -19,7 +19,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet"/>
 
   <style>
-    body { font-family: 'Space Grotesk', sans-serif; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+    }
 
     .dark .bg-white { background-color: #1e293b; }
     .dark .text-gray-800 { color: #e2e8f0; }
@@ -152,39 +154,43 @@
       Let's build something impactful together.
     </h2>
 
-    <div id="button-container" class="flex justify-center">
-      <!-- Dynamic button injected below -->
-    </div>
+    <div id="button-container" class="flex justify-center space-x-4"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
       AOS.init({ duration: 800, once: true });
 
       const container = document.getElementById('button-container');
-      const LINK_CLASSES = "https://openroot-classes.web.app/";
-      const LINK_HYPERSITE = "https://ulvoxo.com";
-      const host = window.location.hostname;
+      const LINK_OPENROOTCLASSES = "https://openroot-classes.web.app/";
+      const LINK_OPENROOTHYPERSITE = "https://ulvoxo.com";
+      const hostname = window.location.hostname;
 
-      let buttonHTML = "";
-
-      if (host.includes("ulvoxo.com")) {
-        // Accessed from ulvoxo.com → show Classes
-        buttonHTML = `<a href="${LINK_CLASSES}" class="inline-block text-sm sm:text-base md:text-lg bg-purple-600 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-8 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700 max-w-xs w-full">Visit OPENROOT CLASSES</a>`;
-      } 
-      else if (host.includes("openroot-classes.web.app")) {
-        // Accessed from classes site → show Hypersite
-        buttonHTML = `<a href="${LINK_HYPERSITE}" class="inline-block text-sm sm:text-base md:text-lg bg-purple-600 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-8 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700 max-w-xs w-full">Visit OPENROOT HYPERSITE</a>`;
-      } 
-      else {
+      if (hostname.includes("ulvoxo.com")) {
+        // If from ULVOXO → show "Visit OPENROOT CLASSES"
+        container.innerHTML = `
+          <a href="${LINK_OPENROOTCLASSES}" 
+             class="inline-block bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700">
+             Visit OPENROOT CLASSES
+          </a>`;
+      } else if (hostname.includes("openroot-classes.web.app")) {
+        // If from OPENROOT CLASSES → show "Visit OPENROOT HYPERSITE"
+        container.innerHTML = `
+          <a href="${LINK_OPENROOTHYPERSITE}" 
+             class="inline-block bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700">
+             Visit OPENROOT HYPERSITE
+          </a>`;
+      } else {
         // Any other source → show both
-        buttonHTML = `
-          <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="${LINK_CLASSES}" class="inline-block text-sm sm:text-base md:text-lg bg-purple-600 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-8 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700 max-w-xs w-full">Visit OPENROOT CLASSES</a>
-            <a href="${LINK_HYPERSITE}" class="inline-block text-sm sm:text-base md:text-lg bg-purple-500 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-8 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-600 max-w-xs w-full">Visit OPENROOT HYPERSITE</a>
-          </div>`;
+        container.innerHTML = `
+          <a href="${LINK_OPENROOTCLASSES}" 
+             class="inline-block bg-purple-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-700">
+             Visit OPENROOT CLASSES
+          </a>
+          <a href="${LINK_OPENROOTHYPERSITE}" 
+             class="inline-block bg-purple-500 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:bg-purple-600">
+             Visit OPENROOT HYPERSITE
+          </a>`;
       }
-
-      container.innerHTML = buttonHTML;
     </script>
   </section>
 
