@@ -481,11 +481,32 @@ tl.to(lines[0], {
   );
 
 // toggle open/close instantly
+document.addEventListener("click", (e) => {
+  const isMenuOpen = menuDropdown.classList.contains("open");
+  if (!isMenuOpen) return;
+
+  const clickedInsideMenu = menuDropdown.contains(e.target);
+  const clickedMenuBtn = menuBtn.contains(e.target);
+
+  if (!clickedInsideMenu && !clickedMenuBtn) {
+    // Close menu
+    menuDropdown.classList.remove("open");
+    menuBtn.classList.remove("open");
+    menuBtn.setAttribute("aria-expanded", "false");
+    menuDropdown.setAttribute("aria-hidden", "true");
+
+    // Sync animation instantly
+    if (!tl.reversed()) {
+      tl.reverse(0);
+    }
+  }
+});
 menuBtn.addEventListener("click", () => {
-  const isOpen = menuDropdown.classList.toggle("open");
-  menuBtn.classList.toggle("open");
-  menuBtn.setAttribute("aria-expanded", isOpen);
-  menuDropdown.setAttribute("aria-hidden", !isOpen);
+  const isOpen = menuDropdown.classList.contains("open");                       
+  menuDropdown.classList.toggle("open", !isOpen);
+  menuBtn.classList.toggle("open", !isOpen);
+  menuBtn.setAttribute("aria-expanded", !isOpen);
+  menuDropdown.setAttribute("aria-hidden", isOpen);
 
   // instant sync
   tl.reversed() ? tl.play(0) : tl.reverse(0);
