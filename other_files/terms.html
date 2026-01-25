@@ -3,110 +3,400 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Terms &amp; Conditions - Openroot</title>
+  <title>Terms & Conditions - Openroot</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Smooth scroll */
+    html { scroll-behavior: smooth; }
+    
+    /* Fade in animation */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-section {
+      opacity: 0;
+      animation: fadeInUp 0.6s ease forwards;
+    }
+    
+    /* Stagger delays */
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    
+    /* Progress bar */
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      z-index: 100;
+      transition: width 0.1s;
+    }
+    
+    /* Glow effect on hover */
+    .term-card {
+      transition: all 0.3s ease;
+    }
+    .term-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.3);
+    }
+    
+    /* Accordion animation */
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    .accordion-content.open {
+      max-height: 500px;
+    }
+    
+    /* Icon rotation */
+    .accordion-icon {
+      transition: transform 0.3s ease;
+    }
+    .accordion-icon.rotate {
+      transform: rotate(180deg);
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-950 text-gray-300 min-h-screen">
 
-  <div class="max-w-4xl mx-auto px-6 py-12">
-    <h1 class="text-4xl font-extrabold text-center text-indigo-600 mb-8">
-      Terms &amp; Conditions
-    </h1>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress" id="progressBar"></div>
 
-    <p class="mb-6">
-      Welcome to Openroot. These Terms &amp; Conditions (“<strong>Terms</strong>”) govern your use of our website and services in accordance with the Information Technology Act, 2000 (“<strong>IT Act</strong>”) and other applicable Indian laws. By accessing or using our website, you agree to be bound by these Terms.
-    </p>
-
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">1. Acceptance of Terms</h2>
-      <p>
-        You must be at least 13 years old to use this website. By accessing or using any part of this site, you agree to comply with and be bound by these Terms, as well as our Privacy Policy.
-      </p>
-    </section>
-
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">2. Compliance with Laws</h2>
-      <p>
-        You agree to comply with all applicable Indian laws, including the IT Act and its amendments, and not to use the site for any unlawful or prohibited purpose.
-      </p>
-    </section>
-
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">3. User Accounts &amp; Security</h2>
-      <ul class="list-disc list-inside ml-6 space-y-2">
-        <li>You are responsible for maintaining the confidentiality of your account credentials.</li>
-        <li>Notify us immediately of any unauthorized use or breach of security.</li>
-        <li>We reserve the right to suspend or terminate accounts for violation of these Terms.</li>
+  <!-- Floating Navigation -->
+  <nav class="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden lg:block">
+    <div class="bg-gray-900/80 backdrop-blur-sm rounded-full p-3 border border-gray-800">
+      <ul class="space-y-3">
+        <li><a href="#section1" class="nav-dot block w-3 h-3 rounded-full bg-gray-600 hover:bg-indigo-500 transition-all" title="Acceptance"></a></li>
+        <li><a href="#section2" class="nav-dot block w-3 h-3 rounded-full bg-gray-600 hover:bg-indigo-500 transition-all" title="Compliance"></a></li>
+        <li><a href="#section3" class="nav-dot block w-3 h-3 rounded-full bg-gray-600 hover:bg-indigo-500 transition-all" title="Accounts"></a></li>
+        <li><a href="#section4" class="nav-dot block w-3 h-3 rounded-full bg-gray-600 hover:bg-indigo-500 transition-all" title="IP"></a></li>
+        <li><a href="#section5" class="nav-dot block w-3 h-3 rounded-full bg-gray-600 hover:bg-indigo-500 transition-all" title="Prohibited"></a></li>
+        <li><a href="#section6" class="nav-dot block w-3 h-3 rounded-full bg-gray-600 hover:bg-indigo-500 transition-all" title="More"></a></li>
       </ul>
-    </section>
+    </div>
+  </nav>
 
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">4. Intellectual Property</h2>
-      <p>
-        All content, trademarks, logos, and software on this site are the property of X Factorial or its licensors and are protected under the Copyright Act, 1957 and the IT Act. No part of this site may be reproduced without our express written consent.
+  <div class="max-w-4xl mx-auto px-6 py-16">
+    
+    <!-- Header Section -->
+    <header class="text-center mb-16 animate-section">
+      <div class="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-4 py-2 mb-6">
+        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+        <span class="text-sm text-indigo-400">Last updated: January 2026</span>
+      </div>
+      <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent mb-6">
+        Terms & Conditions
+      </h1>
+      <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+        We believe in transparency. Here's everything you need to know about using Openroot — written for humans, not lawyers.
       </p>
-    </section>
+      
+      <!-- Quick Stats -->
+      <div class="flex justify-center gap-8 mt-10">
+        <div class="text-center">
+          <div class="text-3xl font-bold text-white">5 min</div>
+          <div class="text-sm text-gray-500">read time</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-white">11</div>
+          <div class="text-sm text-gray-500">sections</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-white">100%</div>
+          <div class="text-sm text-gray-500">transparent</div>
+        </div>
+      </div>
+    </header>
 
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">5. Prohibited Activities</h2>
-      <p>You agree not to:</p>
-      <ul class="list-disc list-inside ml-6 space-y-2">
-        <li>Upload or distribute harmful, obscene, or infringing content.</li>
-        <li>Attempt unauthorized access to our systems or other users’ data.</li>
-        <li>Use automated scripts to scrape or collect data without permission.</li>
+    <!-- TL;DR Section -->
+    <div class="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/30 rounded-2xl p-6 mb-12 animate-section delay-1">
+      <h2 class="text-lg font-semibold text-indigo-400 mb-3 flex items-center gap-2">
+        ⚡ TL;DR (The Quick Version)
+      </h2>
+      <ul class="space-y-2 text-gray-300">
+        <li class="flex items-start gap-2">
+          <span class="text-green-400 mt-1">✓</span>
+          <span>Be 13+ years old to use our services</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-green-400 mt-1">✓</span>
+          <span>Don't do anything illegal or harmful</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-green-400 mt-1">✓</span>
+          <span>Respect intellectual property (ours and others')</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-green-400 mt-1">✓</span>
+          <span>Keep your account secure</span>
+        </li>
       </ul>
-    </section>
+    </div>
 
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">6. Disclaimer of Warranties</h2>
-      <p>
-        TO THE FULLEST EXTENT PERMITTED BY LAW, X FACTORIAL PROVIDES THE SITE “AS IS” AND DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
-      </p>
-    </section>
+    <!-- Accordion Sections -->
+    <div class="space-y-4" id="terms-container">
+      
+      <!-- Section 1 -->
+      <div id="section1" class="term-card bg-gray-900/50 border border-gray-800 rounded-2xl overflow-hidden animate-section">
+        <button class="accordion-btn w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center justify-center w-10 h-10 bg-indigo-500/20 rounded-xl text-indigo-400 font-bold">1</span>
+            <div>
+              <h2 class="text-xl font-semibold text-white">Acceptance of Terms</h2>
+              <p class="text-sm text-gray-500">Age requirements & agreement</p>
+            </div>
+          </div>
+          <svg class="accordion-icon w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-content px-6 pb-6">
+          <div class="pl-14 border-l-2 border-indigo-500/30 ml-5">
+            <p class="text-gray-400">
+              You must be at least <span class="text-white font-medium">13 years old</span> to use this website. By accessing or using any part of this site, you agree to comply with and be bound by these Terms, as well as our Privacy Policy.
+            </p>
+          </div>
+        </div>
+      </div>
 
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">7. Limitation of Liability</h2>
-      <p>
-        IN NO EVENT SHALL X FACTORIAL BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE SITE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-      </p>
-    </section>
+      <!-- Section 2 -->
+      <div id="section2" class="term-card bg-gray-900/50 border border-gray-800 rounded-2xl overflow-hidden animate-section">
+        <button class="accordion-btn w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center justify-center w-10 h-10 bg-purple-500/20 rounded-xl text-purple-400 font-bold">2</span>
+            <div>
+              <h2 class="text-xl font-semibold text-white">Compliance with Laws</h2>
+              <p class="text-sm text-gray-500">Legal obligations in India</p>
+            </div>
+          </div>
+          <svg class="accordion-icon w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-content px-6 pb-6">
+          <div class="pl-14 border-l-2 border-purple-500/30 ml-5">
+            <p class="text-gray-400">
+              You agree to comply with all applicable Indian laws, including the <span class="text-white font-medium">Information Technology Act, 2000</span> and its amendments, and not to use the site for any unlawful or prohibited purpose.
+            </p>
+          </div>
+        </div>
+      </div>
 
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">8. Indemnification</h2>
-      <p>
-        You agree to indemnify and hold harmless X Factorial and its affiliates from any claims, losses, liabilities, damages, costs, or expenses (including legal fees) arising from your violation of these Terms or applicable laws.
-      </p>
-    </section>
+      <!-- Section 3 -->
+      <div id="section3" class="term-card bg-gray-900/50 border border-gray-800 rounded-2xl overflow-hidden animate-section">
+        <button class="accordion-btn w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl text-blue-400 font-bold">3</span>
+            <div>
+              <h2 class="text-xl font-semibold text-white">User Accounts & Security</h2>
+              <p class="text-sm text-gray-500">Your responsibilities</p>
+            </div>
+          </div>
+          <svg class="accordion-icon w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-content px-6 pb-6">
+          <div class="pl-14 border-l-2 border-blue-500/30 ml-5 space-y-3">
+            <div class="flex items-start gap-3">
+              <span class="text-blue-400">🔐</span>
+              <p class="text-gray-400">Maintain the confidentiality of your account credentials</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-blue-400">🚨</span>
+              <p class="text-gray-400">Notify us immediately of any unauthorized use or breach</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-blue-400">⚠️</span>
+              <p class="text-gray-400">We may suspend accounts for Terms violations</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">9. Governing Law &amp; Jurisdiction</h2>
-      <p>
-        These Terms shall be governed by and construed in accordance with the laws of India. Any disputes arising hereunder shall be subject to the exclusive jurisdiction of the courts in Kolkata, India.
-      </p>
-    </section>
+      <!-- Section 4 -->
+      <div id="section4" class="term-card bg-gray-900/50 border border-gray-800 rounded-2xl overflow-hidden animate-section">
+        <button class="accordion-btn w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center justify-center w-10 h-10 bg-pink-500/20 rounded-xl text-pink-400 font-bold">4</span>
+            <div>
+              <h2 class="text-xl font-semibold text-white">Intellectual Property</h2>
+              <p class="text-sm text-gray-500">Copyright & trademarks</p>
+            </div>
+          </div>
+          <svg class="accordion-icon w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-content px-6 pb-6">
+          <div class="pl-14 border-l-2 border-pink-500/30 ml-5">
+            <p class="text-gray-400">
+              All content, trademarks, logos, and software are protected under the <span class="text-white font-medium">Copyright Act, 1957</span> and IT Act. No reproduction without our express written consent.
+            </p>
+          </div>
+        </div>
+      </div>
 
-    <section class="mb-6">
-      <h2 class="text-2xl font-semibold mb-2">10. Modifications to Terms</h2>
-      <p>
-        We reserve the right to update these Terms at any time. Updated Terms will be posted on this page with a revised “Last updated” date. Continued use of the site after changes constitutes acceptance.
-      </p>
-    </section>
+      <!-- Section 5 -->
+      <div id="section5" class="term-card bg-gray-900/50 border border-gray-800 rounded-2xl overflow-hidden animate-section">
+        <button class="accordion-btn w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center justify-center w-10 h-10 bg-red-500/20 rounded-xl text-red-400 font-bold">5</span>
+            <div>
+              <h2 class="text-xl font-semibold text-white">Prohibited Activities</h2>
+              <p class="text-sm text-gray-500">What you cannot do</p>
+            </div>
+          </div>
+          <svg class="accordion-icon w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-content px-6 pb-6">
+          <div class="pl-14 border-l-2 border-red-500/30 ml-5 space-y-3">
+            <div class="flex items-start gap-3">
+              <span class="text-red-400">✗</span>
+              <p class="text-gray-400">Upload harmful, obscene, or infringing content</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-red-400">✗</span>
+              <p class="text-gray-400">Attempt unauthorized access to systems or user data</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-red-400">✗</span>
+              <p class="text-gray-400">Use automated scripts to scrape data without permission</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <section class="mb-8">
-      <h2 class="text-2xl font-semibold mb-2">11. Contact Information</h2>
-      <p>
-        If you have any questions about these Terms, please contact us at:
-      </p>
-      <p class="mt-2">
-        <strong>Email:</strong> connect.openroot@gmail.com<br/>
-        <strong>Address:</strong> Barrackpore (700119), North 24 Parganas, West Bengal, India
-      </p>
-    </section>
+      <!-- Section 6 - Combined remaining sections -->
+      <div id="section6" class="term-card bg-gray-900/50 border border-gray-800 rounded-2xl overflow-hidden animate-section">
+        <button class="accordion-btn w-full flex items-center justify-between p-6 text-left" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center justify-center w-10 h-10 bg-amber-500/20 rounded-xl text-amber-400 font-bold">6+</span>
+            <div>
+              <h2 class="text-xl font-semibold text-white">Legal & Liability</h2>
+              <p class="text-sm text-gray-500">Disclaimers, liability & jurisdiction</p>
+            </div>
+          </div>
+          <svg class="accordion-icon w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-content px-6 pb-6">
+          <div class="pl-14 border-l-2 border-amber-500/30 ml-5 space-y-6">
+            <div>
+              <h3 class="text-white font-medium mb-2">⚖️ Disclaimer of Warranties</h3>
+              <p class="text-gray-400 text-sm">Site provided "AS IS" without warranties of merchantability or fitness.</p>
+            </div>
+            <div>
+              <h3 class="text-white font-medium mb-2">🛡️ Limitation of Liability</h3>
+              <p class="text-gray-400 text-sm">We're not liable for indirect, incidental, or consequential damages.</p>
+            </div>
+            <div>
+              <h3 class="text-white font-medium mb-2">📜 Indemnification</h3>
+              <p class="text-gray-400 text-sm">You agree to hold Openroot harmless from claims arising from violations.</p>
+            </div>
+            <div>
+              <h3 class="text-white font-medium mb-2">🏛️ Governing Law</h3>
+              <p class="text-gray-400 text-sm">Governed by Indian laws. Jurisdiction: <span class="text-white">Courts in Kolkata, India</span>.</p>
+            </div>
+            <div>
+              <h3 class="text-white font-medium mb-2">🔄 Modifications</h3>
+              <p class="text-gray-400 text-sm">We may update these Terms. Continued use means acceptance.</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <footer class="text-center text-gray-500 text-sm">
-      © 2025 OPENROOT. All rights reserved.
+    </div>
+
+    <!-- Contact Section -->
+    <div class="mt-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-center animate-section">
+      <h2 class="text-2xl font-bold text-white mb-2">Questions about our Terms?</h2>
+      <p class="text-indigo-200 mb-6">We're happy to clarify anything. Reach out anytime.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="mailto:connect.openroot@gmail.com" class="inline-flex items-center gap-2 bg-white text-indigo-600 font-semibold px-6 py-3 rounded-xl hover:bg-indigo-50 transition-all">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          Email Us
+        </a>
+      </div>
+      <p class="text-indigo-200 text-sm mt-4">
+        📍 Barrackpore (700119), North 24 Parganas, West Bengal, India
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-500 text-sm mt-12 pb-8">
+      © 2026 Openroot Systems. All rights reserved.
     </footer>
+
   </div>
+
+  <script>
+    // Accordion toggle
+    function toggleAccordion(btn) {
+      const content = btn.nextElementSibling;
+      const icon = btn.querySelector('.accordion-icon');
+      
+      content.classList.toggle('open');
+      icon.classList.toggle('rotate');
+    }
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progressBar').style.width = scrolled + '%';
+    });
+
+    // Intersection Observer for animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate-section').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      observer.observe(el);
+    });
+
+    // Active nav dot
+    const sections = document.querySelectorAll('[id^="section"]');
+    const navDots = document.querySelectorAll('.nav-dot');
+    
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollY >= sectionTop - 200) {
+          current = section.getAttribute('id');
+        }
+      });
+      
+      navDots.forEach((dot, index) => {
+        dot.classList.remove('bg-indigo-500');
+        dot.classList.add('bg-gray-600');
+        if (dot.getAttribute('href') === '#' + current) {
+          dot.classList.remove('bg-gray-600');
+          dot.classList.add('bg-indigo-500');
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>

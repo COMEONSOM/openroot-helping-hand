@@ -513,3 +513,4 @@ menuBtn.addEventListener("mouseleave", () => {
     ease: "elastic.out(1, 0.7)",
   });
 });
+
